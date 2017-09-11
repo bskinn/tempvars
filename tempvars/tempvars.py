@@ -13,29 +13,27 @@
 #
 # ------------------------------------------------------------------------------
 
+
 import attr
 
-
-def array_if_bare_str(val):
-    if type(val) == str:
-        return [val]
-    else:
-        return val
 
 @attr.s()
 class TempVars(object):
 
     # Arguments indicating variables to treat as temporary vars
-    tempvars = attr.ib(convert=array_if_bare_str)
-    starts_with = attr.ib(default=None, convert=array_if_bare_str)
-    ends_with = attr.ib(default=None, convert=array_if_bare_str)
+    tempvars = attr.ib()
+    starts = attr.ib(default=None)
+    ends = attr.ib(default=None)
 
     @tempvars.validator
-    @starts_with.validator
-    @ends_with.validator
-    def must_be_None_or_iterable_of_string(self, _, val):
+    @starts.validator
+    @ends.validator
+    def must_be_None_or_iterable_of_string(self, at, val):
         if val is None:
             return
+
+        if type(val) != list:
+            raise TypeError("'{0}' must be a list of str".format(at.name))
 
         for _ in val:
             if type(_) != str:
@@ -72,13 +70,13 @@ class TempVars(object):
         # Search the namespace for anything matching the starts_with or
         # ends_with
         for k in self.ns.keys():
-            if self.starts_with is not None:
-                for sw in self.starts_with:
+            if self.starts is not None:
+                for sw in self.starts:
                     if k.startswith(sw):
                         self.tempvars.append(k)
 
-            if self.ends_with is not None:
-                for ew in self.ends_with:
+            if self.ends is not None:
+                for ew in self.ends:
                     if k.endswith(ew):
                         self.tempvars.append(k)
 
