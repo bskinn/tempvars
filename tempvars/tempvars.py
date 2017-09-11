@@ -56,7 +56,7 @@ class TempVars(object):
     @ns.default
     def ns_default(self):
         import inspect
-        # Need two f_back's since this call lis inside a method that's
+        # Need two f_back's since this call is inside a method that's
         # inside a class.
         return inspect.currentframe().f_back.f_back.f_locals
 
