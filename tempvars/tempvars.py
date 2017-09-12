@@ -15,6 +15,7 @@
 
 
 import attr
+import inspect
 
 
 @attr.s()
@@ -55,7 +56,7 @@ class TempVars(object):
     ### Flag for whether to restore the prior namespace contents
     restore = attr.ib(default=True, validator=attr.validators.instance_of(bool))
 
-    ### Namespace for temp variable management. Defaults to the locals() of the
+    ### Namespace for temp variable management. Defaults to the local variables of the
     # scope at which the TempVars instance was created. Python library docs
     # frown at this, apparently:
     #
@@ -64,20 +65,19 @@ class TempVars(object):
     # If a different namespace is desired for some reason, it can be passed here
     # Regardless, definitely don't want this in the `repr`, because it's a big
     # honking mess of stuff.
-    ns = attr.ib(repr=False)
+    ns = attr.ib(repr=False, init=False)
 
     @ns.default
     def ns_default(self):
         import inspect
         # Need two f_back's since this call is inside a method that's
-        # inside a class.
-        return inspect.currentframe().f_back.f_back.f_locals
-
-    @ns.validator
-    def ns_must_be_nsdict(self, _, val):
-        if not (type(val) == dict and
-                all(map(lambda s: type(s) == str, val.keys()))):
-            raise ValueError("'ns' must be a namespace dict")
+        # inside a class. This default needs to be crafted this way
+        # because it's evaluated at run time, during instantiation.
+        # Putting the globals() retrieval directly in the attr.ib()
+        # signature above would make the evaluation occur at
+        # definition time(? at import?), which apparently changes
+        # the relevant scope in a significant way.
+        return inspect.currentframe().f_back.f_back.f_globals
 
     ### Internal vars, not set via the attrs __init__
     # Bucket for preserving variables temporarily removed from
