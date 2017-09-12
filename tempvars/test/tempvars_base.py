@@ -19,13 +19,12 @@ import unittest as ut
 
 class TestTempVarsExpectGood(ut.TestCase):
 
-    def locals_subTestTrue(self, id, locdict):
+    def locals_subTest(self, id, locdict, val):
         with self.subTest(id):
-            self.assertTrue(locdict[id])
-
-    def locals_subTestFalse(self, id, locdict):
-        with self.subTest(id):
-            self.assertFalse(locdict[id])
+            if val:
+                self.assertTrue(locdict[id])
+            else:
+                self.assertFalse(locdict[id])
 
 
     def test_Good_tempvarsPassed(self):
@@ -37,8 +36,8 @@ class TestTempVarsExpectGood(ut.TestCase):
              "outside = 'x' in dir()\n"
              , locals())
 
-        self.locals_subTestFalse('inside', locals())
-        self.locals_subTestTrue('outside', locals())
+        self.locals_subTest('inside', locals(), False)
+        self.locals_subTest('outside', locals(), True)
 
 
     def test_Good_tempvarsPassed_NoRestore(self):
@@ -50,8 +49,8 @@ class TestTempVarsExpectGood(ut.TestCase):
              "outside = 'x' in dir()\n"
              , locals())
 
-        self.locals_subTestFalse('inside', locals())
-        self.locals_subTestFalse('outside', locals())
+        self.locals_subTest('inside', locals(), False)
+        self.locals_subTest('outside', locals(), False)
 
 
     def test_Good_startsPassed(self):
@@ -69,12 +68,11 @@ class TestTempVarsExpectGood(ut.TestCase):
              "outside_z = 'z_x' in dir()\n"
              , locals())
 
-        self.locals_subTestFalse('inside_x', locals())
-        self.locals_subTestFalse('inside_y', locals())
-        self.locals_subTestTrue('inside_z', locals())
-        self.locals_subTestTrue('outside_x', locals())
-        self.locals_subTestTrue('outside_y', locals())
-        self.locals_subTestTrue('outside_z', locals())
+        for _ in ['inside_x', 'inside_y']:
+            self.locals_subTest(_, locals(), False)
+
+        for _ in ['inside_z', 'outside_x', 'outside_y', 'outside_z']:
+            self.locals_subTest(_, locals(), True)
 
 
     def test_Good_endsPassed(self):
@@ -92,12 +90,11 @@ class TestTempVarsExpectGood(ut.TestCase):
              "outside_z = 'z_x' in dir()\n"
              , locals())
 
-        self.locals_subTestFalse('inside_x', locals())
-        self.locals_subTestTrue('inside_y', locals())
-        self.locals_subTestFalse('inside_z', locals())
-        self.locals_subTestTrue('outside_x', locals())
-        self.locals_subTestTrue('outside_y', locals())
-        self.locals_subTestTrue('outside_z', locals())
+        for _ in ['inside_x', 'inside_z']:
+            self.locals_subTest(_, locals(), False)
+
+        for _ in ['inside_y', 'outside_x', 'outside_y', 'outside_z']:
+            self.locals_subTest(_, locals(), True)
 
 
     def test_Good_startsPassed_NoRestore(self):
@@ -115,12 +112,33 @@ class TestTempVarsExpectGood(ut.TestCase):
              "outside_z = 'z_x' in dir()\n"
              , locals())
 
-        self.locals_subTestFalse('inside_x', locals())
-        self.locals_subTestFalse('inside_y', locals())
-        self.locals_subTestTrue('inside_z', locals())
-        self.locals_subTestFalse('outside_x', locals())
-        self.locals_subTestFalse('outside_y', locals())
-        self.locals_subTestTrue('outside_z', locals())
+        for _ in ['inside_z', 'outside_z']:
+            self.locals_subTest(_, locals(), True)
+
+        for _ in ['inside_x', 'outside_x', 'inside_y', 'outside_y']:
+            self.locals_subTest(_, locals(), False)
+
+
+    def test_Good_endsPassed_NoRestore(self):
+
+        exec("from tempvars import TempVars\n"
+             "t_x = 5\n"
+             "t_y = 8\n"
+             "z_x = 14\n"
+             "with TempVars(ends=['_x'], restore=False) as tv:\n"
+             "    inside_x = 't_x' in dir()\n"
+             "    inside_y = 't_y' in dir()\n"
+             "    inside_z = 'z_x' in dir()\n"
+             "outside_x = 't_x' in dir()\n"
+             "outside_y = 't_y' in dir()\n"
+             "outside_z = 'z_x' in dir()\n"
+             , locals())
+
+        for _ in ['inside_y', 'outside_y']:
+            self.locals_subTest(_, locals(), True)
+
+        for _ in ['inside_x', 'outside_x', 'inside_z', 'outside_z']:
+            self.locals_subTest(_, locals(), False)
 
 
     def test_Good_checkStorage_tempvarsNoRestore(self):
@@ -140,15 +158,14 @@ class TestTempVarsExpectGood(ut.TestCase):
              "outside_final_exist = 'x' in dir()\n"
              , locals())
 
-        self.locals_subTestTrue('before_val', locals())
-        self.locals_subTestFalse('inside_initial_exist', locals())
-        self.locals_subTestTrue('inside_stored_nsvar', locals())
-        self.locals_subTestTrue('inside_final_exist', locals())
-        self.locals_subTestTrue('inside_final_val', locals())
-        self.locals_subTestTrue('inside_retained_tempvars_empty', locals())
-        self.locals_subTestTrue('outside_stored_nsvar', locals())
-        self.locals_subTestTrue('outside_retained_tempvar', locals())
-        self.locals_subTestFalse('outside_final_exist', locals())
+        self.locals_subTest('before_val', locals(), True)
+        self.locals_subTest('inside_initial_exist', locals(), False)
+        for _ in ['inside_stored_nsvar', 'inside_final_exist',
+                  'inside_final_val', 'inside_retained_tempvars_empty',
+                  'outside_stored_nsvar', 'outside_retained_tempvar']:
+            self.locals_subTest(_, locals(), True)
+        self.locals_subTest('outside_final_exist', locals(), False)
+
 
     def test_Good_checkStorage_startsNoRestore(self):
 
@@ -171,47 +188,30 @@ class TestTempVarsExpectGood(ut.TestCase):
              "outside_final_exist = 't_x' in dir()\n"
              , locals())
 
-        self.locals_subTestTrue('before_val', locals())
-        self.locals_subTestFalse('inside_initial_exist', locals())
-        self.locals_subTestTrue('inside_stored_nsvar', locals())
-        self.locals_subTestTrue('inside_final_exist', locals())
-        self.locals_subTestTrue('inside_final_val', locals())
-        self.locals_subTestTrue('inside_retained_tempvars_empty', locals())
-        self.locals_subTestTrue('outside_stored_nsvar', locals())
-        self.locals_subTestTrue('outside_newvar_absent', locals())
-        self.locals_subTestTrue('outside_newvar_not_in_nsvars', locals())
-        self.locals_subTestTrue('outside_newvar_in_retained_tempvars', locals())
-        self.locals_subTestTrue('outside_retained_tempvar', locals())
-        self.locals_subTestFalse('outside_final_exist', locals())
+        self.locals_subTest('before_val', locals(), True)
+        self.locals_subTest('inside_initial_exist', locals(), False)
+        for _ in ['inside_stored_nsvar', 'inside_final_exist',
+                  'inside_final_val', 'inside_retained_tempvars_empty',
+                  'outside_stored_nsvar', 'outside_newvar_absent',
+                  'outside_newvar_not_in_nsvars', 'outside_newvar_in_retained_tempvars',
+                  'outside_retained_tempvar']:
+            self.locals_subTest(_, locals(), True)
+        self.locals_subTest('outside_final_exist', locals(), False)
 
 
-# Replicate above for 'ends'
+# Replicate test_Good_checkStorage_startsNoRestore for 'ends'
 
-# Confirming contents of passed_tempvars/starts/ends and tempvars after entering with starts/ends
+# Confirming contents of tv.passed_tempvars, tv.starts, tv.ends and tv.tempvars after entering with starts/ends
 
-# Confirming proper behavior of nested contexts
+# Examining if expected behavior of nested contexts occurs (goal to allow mixed restore=True|False)
+
+# Examining behavior of other scopes enclosed within a TempVars with suite; for example:
+#
+#  with TempVars(tempvars=['var']):
+#      def function(...):
+#          thing = var  #Will this throw a NameError?
 
 
-    def test_Good_endsPassed_NoRestore(self):
-
-        exec("from tempvars import TempVars\n"
-             "t_x = 5\n"
-             "t_y = 8\n"
-             "z_x = 14\n"
-             "with TempVars(ends=['_x'], restore=False) as tv:\n"
-             "    inside_x = 't_x' in dir()\n"
-             "    inside_y = 't_y' in dir()\n"
-             "    inside_z = 'z_x' in dir()\n"
-             "outside_x = 't_x' in dir()\n"
-             "outside_y = 't_y' in dir()\n"
-             "outside_z = 'z_x' in dir()\n", locals())
-
-        self.locals_subTestFalse('inside_x', locals())
-        self.locals_subTestTrue('inside_y', locals())
-        self.locals_subTestFalse('inside_z', locals())
-        self.locals_subTestFalse('outside_x', locals())
-        self.locals_subTestTrue('outside_y', locals())
-        self.locals_subTestFalse('outside_z', locals())
 
 
 def suite_expect_good():
