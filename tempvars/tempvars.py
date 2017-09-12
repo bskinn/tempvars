@@ -82,9 +82,12 @@ class TempVars(object):
     ### Internal vars, not set via the attrs __init__
     # Bucket for preserving variables temporarily removed from
     # the namespace
-    stored_nsvars = attr.ib(init=False, default={}, repr=False)
+    stored_nsvars = attr.ib(init=False, repr=False,
+                            default=attr.Factory(dict))
+
     # Bucket for retaining the temporary variables after the context is exited
-    stored_tempvars = attr.ib(init=False, default={}, repr=False)
+    stored_tempvars = attr.ib(init=False, repr=False,
+                              default=attr.Factory(dict))
 
 
     def __enter__(self):
