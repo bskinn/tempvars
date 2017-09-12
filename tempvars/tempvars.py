@@ -21,7 +21,7 @@ import attr
 class TempVars(object):
 
     # Arguments indicating variables to treat as temporary vars
-    tempvars = attr.ib()
+    tempvars = attr.ib(default=[])
     starts = attr.ib(default=None)
     ends = attr.ib(default=None)
 
@@ -31,16 +31,19 @@ class TempVars(object):
     def must_be_None_or_iterable_of_string(self, at, val):
         # Standard error for failure return
         te = TypeError("'{0}' must be a list of str".format(at.name))
-        
+
         if val is None:
             return
 
         if type(val) != list:
             raise te
 
-        for _ in val:
-            if type(_) != str:
+        for s in val:
+            if type(s) != str:
                 raise te
+            if at.name != 'tempvars' and (s == '_' or s == '__'):
+                raise ValueError("'_' and '__' are not permitted "
+                                 "for '{0}'".format(at.name))
         else:
             # Reached the end of the list, so everything's fine
             return
@@ -55,7 +58,9 @@ class TempVars(object):
     # Namespace for temp variable management. Defaults to the locals() of the
     # scope at which the TempVars instance was created.
     # If a different namespace is desired for some reason, it can be passed here
-    ns = attr.ib()
+    # Regardless, definitely don't want this in the `repr`, because it's a big
+    # honking mess of stuff.
+    ns = attr.ib(repr=False)
 
     @ns.default
     def ns_default(self):
@@ -70,7 +75,7 @@ class TempVars(object):
             raise ValueError("'ns' must be a namespace dict")
 
     ### Internal vars, not set via the attrs __init__
-    # Bucket for preserving variables temporarily removed from 
+    # Bucket for preserving variables temporarily removed from
     # the namespace
     stored_nsvars = attr.ib(init=False, default={})
 
