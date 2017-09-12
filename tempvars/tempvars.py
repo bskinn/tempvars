@@ -56,8 +56,9 @@ class TempVars(object):
     ### Flag for whether to restore the prior namespace contents
     restore = attr.ib(default=True, validator=attr.validators.instance_of(bool))
 
-    ### Namespace for temp variable management. Always the globals at
-    #   the level of the invoker of the TempVars instance.
+    ### Namespace for temp variable management.
+    # Always the globals at the level of the invoker of the TempVars
+    # instance (set below in ns_default).
     ns = attr.ib(repr=False, init=False)
 
     @ns.default
