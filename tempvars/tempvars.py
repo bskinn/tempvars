@@ -13,99 +13,114 @@
 #
 # ------------------------------------------------------------------------------
 
+
 import attr
+import inspect
 
-
-def array_if_bare_str(val):
-    if type(val) == str:
-        return [val]
-    else:
-        return val
 
 @attr.s()
 class TempVars(object):
 
-    # Arguments indicating variables to treat as temporary vars
-    tempvars = attr.ib(convert=array_if_bare_str)
-    starts_with = attr.ib(default=None, convert=array_if_bare_str)
-    ends_with = attr.ib(default=None, convert=array_if_bare_str)
+    ### Arguments indicating variables to treat as temporary vars
+    tempvars = attr.ib(default=[])
+    starts = attr.ib(default=None, repr=False)
+    ends = attr.ib(default=None, repr=False)
 
     @tempvars.validator
-    @starts_with.validator
-    @ends_with.validator
-    def must_be_None_or_iterable_of_string(self, _, val):
+    @starts.validator
+    @ends.validator
+    def must_be_None_or_iterable_of_string(self, at, val):
+        # Standard error for failure return
+        te = TypeError("'{0}' must be a list of str".format(at.name))
+
         if val is None:
             return
 
-        for _ in val:
-            if type(_) != str:
-                raise TypeError('Variable names must be strings')
+        if type(val) != list:
+            raise te
+
+        for s in val:
+            if type(s) != str:
+                raise te
+            if at.name != 'tempvars' and (s == '_' or s == '__'):
+                raise ValueError("'_' and '__' are not permitted "
+                                 "for '{0}'".format(at.name))
         else:
             # Reached the end of the list, so everything's fine
             return
 
-        raise TypeError('Variable names must be strings')
+        # Fall-through to this point means it's something other than
+        # a list of strings
+        raise te
 
-    # Flag for whether to restore the prior namespace contents
+    ### Flag for whether to restore the prior namespace contents
     restore = attr.ib(default=True, validator=attr.validators.instance_of(bool))
 
-    # Namespace to manipulate defaults to that which instantiated the class.
+    ### Namespace for temp variable management. Defaults to the local variables of the
+    # scope at which the TempVars instance was created. Python library docs
+    # frown at this, apparently:
+    #
+    #    https://docs.python.org/3/library/functions.html#locals
+    #
     # If a different namespace is desired for some reason, it can be passed here
-    ns = attr.ib()
+    # Regardless, definitely don't want this in the `repr`, because it's a big
+    # honking mess of stuff.
+    ns = attr.ib(repr=False, init=False)
 
     @ns.default
     def ns_default(self):
         import inspect
         # Need two f_back's since this call is inside a method that's
-        # inside a class.
-        return inspect.currentframe().f_back.f_back.f_locals
+        # inside a class. This default needs to be crafted this way
+        # because it's evaluated at run time, during instantiation.
+        # Putting the globals() retrieval directly in the attr.ib()
+        # signature above would make the evaluation occur at
+        # definition time(? at import?), which apparently changes
+        # the relevant scope in a significant way.
+        return inspect.currentframe().f_back.f_back.f_globals
 
-    @ns.validator
-    def ns_must_be_nsdict(self, _, val):
-        if not (type(val) == dict and all(map(lambda s: type(s) == str, val.keys()))):
-            raise ValueError("'ns' must be a namespace dict")
+    ### Internal vars, not set via the attrs __init__
+    # Bucket for preserving variables temporarily removed from
+    # the namespace
+    stored_nsvars = attr.ib(init=False, default={}, repr=False)
+    # Bucket for retaining the temporary variables after the context is exited
+    stored_tempvars = attr.ib(init=False, default={}, repr=False)
 
-    # Internal vars, not set via the attrs __init__
-    stored_nsvars = attr.ib(init=False, default={})
 
     def __enter__(self):
-        # Search the namespace for anything matching the starts_with or
-        # ends_with
+        # Search the namespace for anything matching the .starts or
+        # .ends patterns
         for k in self.ns.keys():
-            if self.starts_with is not None:
-                for sw in self.starts_with:
+            if self.starts is not None:
+                for sw in self.starts:
                     if k.startswith(sw):
                         self.tempvars.append(k)
 
-            if self.ends_with is not None:
-                for ew in self.ends_with:
+            if self.ends is not None:
+                for ew in self.ends:
                     if k.endswith(ew):
                         self.tempvars.append(k)
 
         # Now that all of the variables have been identified,
-        #  store the values and cull them from the namespace
+        # pop any values that exist from the namespace and store
         for k in self.tempvars:
-            # Must account for the possibility that a temp var
-            # won't already exist.
-            try:
+            if k in self.ns:
                 self.stored_nsvars.update({k: self.ns.pop(k)})
-            except KeyError:
-                # No var found in namespace, do nothing
-                pass
 
-        # Return this class so that users can inspect it if they
-        # need to for some reason
+        # Return instance so that users can inspect it if needed
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        # Clear the namespace of all temp variables, if they exist
-        list(self.ns.pop(_) for _ in self.tempvars if _ in self.ns)
+        # Pop any existing temp variables from the ns and into
+        # the storage dict
+        for k in self.tempvars:
+            if k in self.ns:
+                self.stored_tempvars.update({k: self.ns.pop(k)})
 
         # If restore is set, then repopulate the namespace with
-        # the pre-existing values.
-        # Otherwise, just do nothing.
+        # the pre-existing values.  Otherwise, do nothing.
         if self.restore:
             self.ns.update(self.stored_nsvars)
 
-        # Handle any exception raised
+        # Containing code should handle any exception raised
         return False
