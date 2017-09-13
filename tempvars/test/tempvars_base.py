@@ -199,19 +199,81 @@ class TestTempVarsExpectGood(ut.TestCase):
         self.locals_subTest('outside_final_exist', locals(), False)
 
 
-# Replicate test_Good_checkStorage_startsNoRestore for 'ends'
+    def test_Good_checkStorage_endsNoRestore(self):
 
-# Confirming contents of tv.passed_tempvars, tv.starts, tv.ends and tv.tempvars after entering with starts/ends
+        exec("from tempvars import TempVars\n"
+             "t_x = 5\n"
+             "before_val = t_x == 5\n"
+             "with TempVars(ends=['_x'], restore=False) as tv:\n"
+             "    inside_initial_exist = 't_x' in dir()\n"
+             "    inside_stored_nsvar = tv.stored_nsvars.get('t_x') is 5\n"
+             "    t_x = 18\n"
+             "    r_x = 43\n"
+             "    inside_final_exist = 't_x' in dir()\n"
+             "    inside_final_val = t_x == 18\n"
+             "    inside_retained_tempvars_empty = len(tv.retained_tempvars) == 0\n"
+             "outside_stored_nsvar = tv.stored_nsvars.get('t_x') == 5\n"
+             "outside_newvar_absent = 'r_x' not in dir()\n"
+             "outside_newvar_not_in_nsvars = 'r_x' not in tv.stored_nsvars\n"
+             "outside_retained_tempvar = tv.retained_tempvars.get('t_x') == 18\n"
+             "outside_newvar_in_retained_tempvars = 'r_x' in tv.retained_tempvars\n"
+             "outside_final_exist = 't_x' in dir()\n"
+             , locals())
+
+        self.locals_subTest('before_val', locals(), True)
+        self.locals_subTest('inside_initial_exist', locals(), False)
+        for _ in ['inside_stored_nsvar', 'inside_final_exist',
+                  'inside_final_val', 'inside_retained_tempvars_empty',
+                  'outside_stored_nsvar', 'outside_newvar_absent',
+                  'outside_newvar_not_in_nsvars', 'outside_newvar_in_retained_tempvars',
+                  'outside_retained_tempvar']:
+            self.locals_subTest(_, locals(), True)
+        self.locals_subTest('outside_final_exist', locals(), False)
+
+
+    def test_Good_checkArgs(self):
+
+        exec("from tempvars import TempVars\n"
+             "t_x = 5\n"
+             "t_y = 8\n"
+             "r_x = 12\n"
+             "f_z = 59\n"
+             "d_z = 12\n"
+             "g_r = 43\n"
+             "with TempVars(tempvars=['g_r'], starts=['t_'], ends=['_z']) as tv:\n"
+             "    g_r_absent = 'g_r' not in dir()\n"
+             "    t_x_absent = 't_x' not in dir()\n"
+             "    t_y_absent = 't_y' not in dir()\n"
+             "    r_x_present = 'r_x' in dir()\n"
+             "    f_z_absent = 'f_z' not in dir()\n"
+             "    d_z_absent = 'd_z' not in dir()\n"
+             "    g_r_in_tempvars = 'g_r' in tv.tempvars\n"
+             "    t_x_in_tempvars = 't_x' in tv.tempvars\n"
+             "    t_y_in_tempvars = 't_y' in tv.tempvars\n"
+             "    r_x_not_in_tempvars = 'r_x' not in tv.tempvars\n"
+             "    f_z_in_tempvars = 'f_z' in tv.tempvars\n"
+             "    d_z_in_tempvars = 'd_z' in tv.tempvars\n"
+             "    g_r_in_passed_tempvars = 'g_r' in tv.passed_tempvars\n"
+             "    t_x_not_in_passed_tempvars = 't_x' not in tv.passed_tempvars\n"
+             "    t_y_not_in_passed_tempvars = 't_y' not in tv.passed_tempvars\n"
+             "    r_x_not_in_passed_tempvars = 'r_x' not in tv.passed_tempvars\n"
+             "    f_z_not_in_passed_tempvars = 'f_z' not in tv.passed_tempvars\n"
+             "    d_z_not_in_passed_tempvars = 'd_z' not in tv.passed_tempvars\n"
+             , locals())
+
+        for _ in ['g_r_absent', 't_x_absent', 't_y_absent',
+                  'r_x_present', 'f_z_absent', 'd_z_absent',
+                  'g_r_in_tempvars', 't_x_in_tempvars', 't_y_in_tempvars',
+                  'r_x_not_in_tempvars', 'f_z_in_tempvars', 'd_z_in_tempvars',
+                  'g_r_in_passed_tempvars', 't_x_not_in_passed_tempvars',
+                  't_y_not_in_passed_tempvars', 'r_x_not_in_passed_tempvars',
+                  'f_z_not_in_passed_tempvars', 'd_z_not_in_passed_tempvars']:
+            self.locals_subTest(_, locals(), True)
+
+
+# Confirm that multiple entries in tempvars, starts, and ends all work appropriately
 
 # Examining if expected behavior of nested contexts occurs (goal to allow mixed restore=True|False)
-
-# Examining behavior of other scopes enclosed within a TempVars with suite; for example:
-#
-#  with TempVars(tempvars=['var']):
-#      def function(...):
-#          thing = var  #Will this throw a NameError?
-
-
 
 
 def suite_expect_good():
