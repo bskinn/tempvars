@@ -53,6 +53,25 @@ class TestTempVarsExpectGood(ut.TestCase):
         self.locals_subTest('outside', locals(), False)
 
 
+    def test_Good_tempvarsPassedButNotPresent(self):
+
+        exec("from tempvars import TempVars\n"
+             "x = 5\n"
+             "with TempVars(tempvars=['y']) as tv:\n"
+             "    y = 12\n"
+             "    inside_x_present = 'x' in dir()\n"
+             "    inside_y_present = 'y' in dir()\n"
+             "outside_x_present = 'x' in dir()\n"
+             "outside_y_absent = 'y' not in dir()\n"
+             "outside_y_retained = tv.retained_tempvars['y'] == 12\n"
+             , locals())
+
+        for _ in ['inside_x_present', 'outside_x_present',
+                  'inside_y_present', 'outside_y_absent',
+                  'outside_y_retained']:
+            self.locals_subTest(_, locals(), True)
+
+
     def test_Good_startsPassed(self):
 
         exec("from tempvars import TempVars\n"
@@ -271,7 +290,95 @@ class TestTempVarsExpectGood(ut.TestCase):
             self.locals_subTest(_, locals(), True)
 
 
-# Confirm that multiple entries in tempvars, starts, and ends all work appropriately
+    def test_Good_tempvarsMultiPassed(self):
+
+        exec("from tempvars import TempVars\n"
+             "t_x = 5\n"
+             "t_y = 8\n"
+             "z_x = 14\n"
+             "z_m = 24\n"
+             "r_x = 44\n"
+             "with TempVars(tempvars=['t_x', 'z_m']) as tv:\n"
+             "    inside_t_x_absent = 't_x' not in dir()\n"
+             "    inside_t_y_present = 't_y' in dir()\n"
+             "    inside_z_x_present = 'z_x' in dir()\n"
+             "    inside_z_m_absent = 'z_m' not in dir()\n"
+             "    inside_r_x_present = 'r_x' in dir()\n"
+             "outside_t_x_present = 't_x' in dir()\n"
+             "outside_t_y_present = 't_y' in dir()\n"
+             "outside_z_x_present = 'z_x' in dir()\n"
+             "outside_z_m_present = 'z_m' in dir()\n"
+             "outside_r_x_present = 'r_x' in dir()\n"
+             , locals())
+
+        for _ in ['inside_t_x_absent', 'inside_t_y_present',
+                  'inside_z_x_present', 'inside_z_m_absent',
+                  'inside_r_x_present',
+                  'outside_t_x_present', 'outside_t_y_present',
+                  'outside_z_x_present', 'outside_z_m_present',
+                  'outside_r_x_present']:
+            self.locals_subTest(_, locals(), True)
+
+
+    def test_Good_startsMultiPassed(self):
+
+        exec("from tempvars import TempVars\n"
+             "t_x = 5\n"
+             "t_y = 8\n"
+             "z_x = 14\n"
+             "z_m = 24\n"
+             "r_x = 44\n"
+             "with TempVars(starts=['t_', 'z_']) as tv:\n"
+             "    inside_t_x_absent = 't_x' not in dir()\n"
+             "    inside_t_y_absent = 't_y' not in dir()\n"
+             "    inside_z_x_absent = 'z_x' not in dir()\n"
+             "    inside_z_m_absent = 'z_m' not in dir()\n"
+             "    inside_r_x_present = 'r_x' in dir()\n"
+             "outside_t_x_present = 't_x' in dir()\n"
+             "outside_t_y_present = 't_y' in dir()\n"
+             "outside_z_x_present = 'z_x' in dir()\n"
+             "outside_z_m_present = 'z_m' in dir()\n"
+             "outside_r_x_present = 'r_x' in dir()\n"
+             , locals())
+
+        for _ in ['inside_t_x_absent', 'inside_t_y_absent',
+                  'inside_z_x_absent', 'inside_z_m_absent',
+                  'inside_r_x_present',
+                  'outside_t_x_present', 'outside_t_y_present',
+                  'outside_z_x_present', 'outside_z_m_present',
+                  'outside_r_x_present']:
+            self.locals_subTest(_, locals(), True)
+
+
+    def test_Good_endsMultiPassed(self):
+
+        exec("from tempvars import TempVars\n"
+             "t_x = 5\n"
+             "t_y = 8\n"
+             "z_x = 14\n"
+             "z_m = 24\n"
+             "r_x = 44\n"
+             "with TempVars(ends=['_x', '_y']) as tv:\n"
+             "    inside_t_x_absent = 't_x' not in dir()\n"
+             "    inside_t_y_absent = 't_y' not in dir()\n"
+             "    inside_z_x_absent = 'z_x' not in dir()\n"
+             "    inside_z_m_present = 'z_m' in dir()\n"
+             "    inside_r_x_absent = 'r_x' not in dir()\n"
+             "outside_t_x_present = 't_x' in dir()\n"
+             "outside_t_y_present = 't_y' in dir()\n"
+             "outside_z_x_present = 'z_x' in dir()\n"
+             "outside_z_m_present = 'z_m' in dir()\n"
+             "outside_r_x_present = 'r_x' in dir()\n"
+             , locals())
+
+        for _ in ['inside_t_x_absent', 'inside_t_y_absent',
+                  'inside_z_x_absent', 'inside_z_m_present',
+                  'inside_r_x_absent',
+                  'outside_t_x_present', 'outside_t_y_present',
+                  'outside_z_x_present', 'outside_z_m_present',
+                  'outside_r_x_present']:
+            self.locals_subTest(_, locals(), True)
+
 
 # Examining if expected behavior of nested contexts occurs (goal to allow mixed restore=True|False)
 
