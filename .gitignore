@@ -106,3 +106,5 @@ doc/source/isphx/*
 # NoteTab Light backup files
 *.bak
 
+# Testing scratch folder
+tempvars/test/scratch/*

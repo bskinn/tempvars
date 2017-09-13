@@ -15,9 +15,38 @@
 
 
 import unittest as ut
+import os
+import os.path as osp
 
 
 class TestTempVarsExpectGood(ut.TestCase):
+
+    # Constants for scratch-module approach to getting the
+    # test code into a global scope
+    scratch_dir = osp.join('tempvars', 'test', 'scratch')
+    scratch_fn = osp.join(scratch_dir, 'scratch.py')
+
+
+    @classmethod
+    def setUpClass(cls):
+        # Ensure scratch directory exists
+        if not osp.isdir(cls.scratch_dir):
+            os.mkdir(cls.scratch_dir)
+
+    @classmethod
+    def tearDownClass(cls):
+        if osp.isfile(cls.scratch_fn):
+            pass #os.remove(cls.scratch_fn)
+
+
+    @classmethod
+    def runCode(cls, code):
+        with open(cls.scratch_fn, 'w') as f:
+            f.write(code)
+
+        from tempvars.test.scratch.scratch import d
+        return d
+
 
     def locals_subTest(self, id, locdict, val):
         with self.subTest(id):
@@ -29,15 +58,15 @@ class TestTempVarsExpectGood(ut.TestCase):
 
     def test_Good_tempvarsPassed(self):
 
-        exec("from tempvars import TempVars\n"
-             "x = 5\n"
-             "with TempVars(tempvars=['x']) as tv:\n"
-             "    inside = 'x' in dir()\n"
-             "outside = 'x' in dir()\n"
-             , locals())
+        d = self.runCode("from tempvars import TempVars\n"
+                         "d = {}\n"
+                         "x = 5\n"
+                         "with TempVars(tempvars=['x']) as tv:\n"
+                         "    d['inside_absent'] = 'x' not in dir()\n"
+                         "d['outside_present'] = 'x' in dir()\n")
 
-        self.locals_subTest('inside', locals(), False)
-        self.locals_subTest('outside', locals(), True)
+        for _ in ['inside_absent', 'outside_present']:
+            self.locals_subTest(_, d, True)
 
 
     def test_Good_tempvarsPassed_NoRestore(self):
