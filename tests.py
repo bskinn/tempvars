@@ -85,21 +85,16 @@ def main():
 
     # Commandline tests per-group
     # Expect-good tests
-    addsuiteif(tempvars.test.tempvars_base.suite_expect_good(),
+    addsuiteif(tempvars.test.tempvars_base.suite_expect_good(params['k']),
                [AP.ALL, AP.GOOD])
     # Expect-fail tests
-    addsuiteif(tempvars.test.tempvars_base.suite_expect_fail(),
+    addsuiteif(tempvars.test.tempvars_base.suite_expect_fail(params['k']),
                [AP.ALL, AP.FAIL])
 
     # Create the test runner and execute
     ttr = ut.TextTestRunner(buffer=True,
                             verbosity=(2 if params['v'] else 1))
     success = ttr.run(ts).wasSuccessful()
-
-    # Delete the temp files unless specified
-    if not params['k'] and osp.isdir(scratch_dir):
-        list(map(os.remove, (osp.join(scratch_dir, _)
-                 for _ in os.listdir(scratch_dir) if _.startswith('scratch'))))
 
     # Return based on success result (enables tox)
     sys.exit(0 if success else 1)

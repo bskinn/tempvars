@@ -18,9 +18,9 @@ import unittest as ut
 import os
 import os.path as osp
 
+keep = []
 
 class TestTempVarsExpectGood(ut.TestCase):
-
 
     @classmethod
     def setUpClass(cls):
@@ -31,13 +31,21 @@ class TestTempVarsExpectGood(ut.TestCase):
         if not osp.isdir(scratch_dir):
             os.mkdir(scratch_dir)
 
-#    @classmethod
-#    def tearDownClass(cls):
-#
-#        from tempvars.test.consts import scratch_fn
-#
-#        if osp.isfile(scratch_fn):
-#            pass #os.remove(cls.scratch_fn)
+        # Clear its contents
+        for _ in os.listdir(scratch_dir):
+            fn = osp.join(scratch_dir, _)
+            if osp.isfile(fn):
+                os.remove(fn)
+
+    @classmethod
+    def tearDownClass(cls):
+
+        from tempvars.test.consts import scratch_fn
+
+        # Always delete the basic scratch file if it exists
+        # If 'keep' is set, then it presumably won't exist
+        if osp.isfile(scratch_fn):
+            os.remove(scratch_fn)
 
 
     @classmethod
@@ -52,9 +60,10 @@ class TestTempVarsExpectGood(ut.TestCase):
         # Importing it runs it; the results should be collected in `d`
         from tempvars.test.scratch.scratch import d
 
-        # Rename to augmented file
-        base, ext = osp.splitext(scratch_fn)
-        os.rename(scratch_fn, '{0}_{1}{2}'.format(base, name, ext))
+        # Rename to augmented file if indicated
+        if keep[0]:
+            base, ext = osp.splitext(scratch_fn)
+            os.rename(scratch_fn, '{0}_{1}{2}'.format(base, name, ext))
 
         return d
 
@@ -424,7 +433,8 @@ class TestTempVarsExpectGood(ut.TestCase):
 # Examining if expected behavior of nested contexts occurs (goal to allow mixed restore=True|False)
 
 
-def suite_expect_good():
+def suite_expect_good(k):
+    keep.append(k)
     s = ut.TestSuite()
     tl = ut.TestLoader()
     s.addTests([tl.loadTestsFromTestCase(TestTempVarsExpectGood)])
@@ -432,7 +442,8 @@ def suite_expect_good():
     return s
 
 
-def suite_expect_fail():
+def suite_expect_fail(k):
+    keep.append(k)
     s = ut.TestSuite()
     tl = ut.TestLoader()
     s.addTests([])
