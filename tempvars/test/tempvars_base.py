@@ -21,30 +21,41 @@ import os.path as osp
 
 class TestTempVarsExpectGood(ut.TestCase):
 
-    # Constants for scratch-module approach to getting the
-    # test code into a global scope
-    scratch_dir = osp.join('tempvars', 'test', 'scratch')
-    scratch_fn = osp.join(scratch_dir, 'scratch.py')
-
 
     @classmethod
     def setUpClass(cls):
+
+        from tempvars.test.consts import scratch_dir
+
         # Ensure scratch directory exists
-        if not osp.isdir(cls.scratch_dir):
-            os.mkdir(cls.scratch_dir)
+        if not osp.isdir(scratch_dir):
+            os.mkdir(scratch_dir)
+
+#    @classmethod
+#    def tearDownClass(cls):
+#
+#        from tempvars.test.consts import scratch_fn
+#
+#        if osp.isfile(scratch_fn):
+#            pass #os.remove(cls.scratch_fn)
+
 
     @classmethod
-    def tearDownClass(cls):
-        if osp.isfile(cls.scratch_fn):
-            pass #os.remove(cls.scratch_fn)
+    def runCode(cls, code, name):
 
+        from tempvars.test.consts import scratch_fn
 
-    @classmethod
-    def runCode(cls, code):
-        with open(cls.scratch_fn, 'w') as f:
+        # Write the desired code to the temp file
+        with open(scratch_fn, 'w') as f:
             f.write(code)
 
+        # Importing it runs it; the results should be collected in `d`
         from tempvars.test.scratch.scratch import d
+
+        # Rename to augmented file
+        base, ext = osp.splitext(scratch_fn)
+        os.rename(scratch_fn, '{0}_{1}{2}'.format(base, name, ext))
+
         return d
 
 
@@ -63,7 +74,8 @@ class TestTempVarsExpectGood(ut.TestCase):
                          "x = 5\n"
                          "with TempVars(tempvars=['x']) as tv:\n"
                          "    d['inside_absent'] = 'x' not in dir()\n"
-                         "d['outside_present'] = 'x' in dir()\n")
+                         "d['outside_present'] = 'x' in dir()\n"
+                         , 'Good_tempvarsPassed')
 
         for _ in ['inside_absent', 'outside_present']:
             self.locals_subTest(_, d, True)

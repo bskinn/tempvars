@@ -37,6 +37,10 @@ def get_parser():
     prs.add_argument('-v', action='store_true',
                      help="Show verbose output")
 
+    # Argument to keep temp files around
+    prs.add_argument('-k', action='store_true',
+                     help="Keep temporary files")
+
     # Groups without subgroups
     prs.add_argument(AP.PFX.format(AP.ALL), '-a',
                      action='store_true',
@@ -54,6 +58,10 @@ def get_parser():
 
 def main():
     import tempvars.test
+    from tempvars.test.consts import scratch_dir
+
+    import os
+    import os.path as osp
     import sys
     import unittest as ut
 
@@ -87,6 +95,11 @@ def main():
     ttr = ut.TextTestRunner(buffer=True,
                             verbosity=(2 if params['v'] else 1))
     success = ttr.run(ts).wasSuccessful()
+
+    # Delete the temp files unless specified
+    if not params['k'] and osp.isdir(scratch_dir):
+        list(map(os.remove, (osp.join(scratch_dir, _)
+                 for _ in os.listdir(scratch_dir) if _.startswith('scratch'))))
 
     # Return based on success result (enables tox)
     sys.exit(0 if success else 1)

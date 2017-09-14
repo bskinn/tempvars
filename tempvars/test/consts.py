@@ -1,11 +1,11 @@
 # ------------------------------------------------------------------------------
-# Name:        __init__
-# Purpose:     Package submodule definition for the test suite
+# Name:        consts
+# Purpose:     Handy constants for the test runner
 #
 # Author:      Brian Skinn
 #                bskinn@alum.mit.edu
 #
-# Created:     11 Sep 2017
+# Created:     13 Sep 2017
 # Copyright:   (c) Brian Skinn 2017
 # License:     The MIT License; see "LICENSE.txt" for full license terms.
 #
@@ -13,9 +13,7 @@
 #
 # ------------------------------------------------------------------------------
 
-from __future__ import absolute_import
+import os.path as osp
 
-__all__ = ['tempvars_base', 'consts']
-
-from . import *
-
+scratch_dir = osp.join('tempvars', 'test', 'scratch')
+scratch_fn = osp.join(scratch_dir, 'scratch.py')
