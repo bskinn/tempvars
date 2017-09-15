@@ -15,7 +15,6 @@
 
 
 import attr
-import inspect
 
 
 @attr.s()

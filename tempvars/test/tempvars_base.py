@@ -14,13 +14,21 @@
 # ------------------------------------------------------------------------------
 
 
-import unittest as ut
 import os
 import os.path as osp
+import unittest as ut
 
+
+# Module-scope mutable object to be used as a closure in `runCode` method
 keep = []
 
-class TestTempVarsExpectGood(ut.TestCase):
+# Only want to clear the scratch folder once. Length-zero means it hasn't
+# been cleared; length-one means it has
+cleared = []
+
+
+class SuperTestTempVars_ScratchMgr(object):
+    """Superclass to handle scratch folder management."""
 
     @classmethod
     def setUpClass(cls):
@@ -31,11 +39,13 @@ class TestTempVarsExpectGood(ut.TestCase):
         if not osp.isdir(scratch_dir):
             os.mkdir(scratch_dir)
 
-        # Clear its contents
-        for _ in os.listdir(scratch_dir):
-            fn = osp.join(scratch_dir, _)
-            if osp.isfile(fn):
-                os.remove(fn)
+        # Clear its contents if it's the first ut.TestCase executed
+        if len(cleared) == 0:
+            cleared.append(None)
+            for _ in os.listdir(scratch_dir):
+                fn = osp.join(scratch_dir, _)
+                if osp.isfile(fn):
+                    os.remove(fn)
 
     @classmethod
     def tearDownClass(cls):
@@ -48,8 +58,9 @@ class TestTempVarsExpectGood(ut.TestCase):
             os.remove(scratch_fn)
 
 
-    @classmethod
-    def runCode(cls, code, name):
+    def runCode(self, code, name):
+
+        import importlib
 
         from tempvars.test.consts import scratch_fn
 
@@ -57,15 +68,20 @@ class TestTempVarsExpectGood(ut.TestCase):
         with open(scratch_fn, 'w') as f:
             f.write(code)
 
-        # Importing it runs it; the results should be collected in `d`
-        from tempvars.test.scratch.scratch import d
+        # Must force a full recompile of scratch.py. Clearing
+        # __pycache__ was not sufficient, nor was using
+        # importlib.invalidate_caches()
+        import tempvars.test.scratch.scratch as scratch
+        importlib.reload(scratch)
 
-        # Rename to augmented file if indicated
+        # Rename to augmented file if indicated to keep
         if keep[0]:
             base, ext = osp.splitext(scratch_fn)
             os.rename(scratch_fn, '{0}_{1}{2}'.format(base, name, ext))
 
-        return d
+        # `d` is a result accumulator dict that should be built up within
+        # the code of each test
+        return scratch.d
 
 
     def locals_subTest(self, id, locdict, val):
@@ -75,6 +91,9 @@ class TestTempVarsExpectGood(ut.TestCase):
             else:
                 self.assertFalse(locdict[id])
 
+
+class TestTempVarsExpectGood(SuperTestTempVars_ScratchMgr, ut.TestCase):
+    """Testing code accuracy under good params & expected behavior."""
 
     def test_Good_tempvarsPassed(self):
 
@@ -92,56 +111,59 @@ class TestTempVarsExpectGood(ut.TestCase):
 
     def test_Good_tempvarsPassed_NoRestore(self):
 
-        exec("from tempvars import TempVars\n"
-             "x = 5\n"
-             "with TempVars(tempvars=['x'], restore=False) as tv:\n"
-             "    inside = 'x' in dir()\n"
-             "outside = 'x' in dir()\n"
-             , locals())
+        d = self.runCode("from tempvars import TempVars\n"
+                         "d = {}\n"
+                         "x = 5\n"
+                         "with TempVars(tempvars=['x'], restore=False) as tv:\n"
+                         "    d['inside_absent'] = 'x' not in dir()\n"
+                         "d['outside_absent'] = 'x' not in dir()\n"
+                         , 'Good_tempvarsPassed_NoRestore')
 
-        self.locals_subTest('inside', locals(), False)
-        self.locals_subTest('outside', locals(), False)
+        for _ in ['inside_absent', 'outside_absent']:
+            self.locals_subTest(_, d, True)
+
 
 
     def test_Good_tempvarsPassedButNotPresent(self):
 
-        exec("from tempvars import TempVars\n"
-             "x = 5\n"
-             "with TempVars(tempvars=['y']) as tv:\n"
-             "    y = 12\n"
-             "    inside_x_present = 'x' in dir()\n"
-             "    inside_y_present = 'y' in dir()\n"
-             "outside_x_present = 'x' in dir()\n"
-             "outside_y_absent = 'y' not in dir()\n"
-             "outside_y_retained = tv.retained_tempvars['y'] == 12\n"
-             , locals())
+        d = self.runCode("from tempvars import TempVars\n"
+                         "d = {}\n"
+                         "x = 5\n"
+                         "with TempVars(tempvars=['y']) as tv:\n"
+                         "    y = 12\n"
+                         "    d['inside_x_present'] = 'x' in dir()\n"
+                         "    d['inside_y_present'] = 'y' in dir()\n"
+                         "d['outside_x_present'] = 'x' in dir()\n"
+                         "d['outside_y_absent'] = 'y' not in dir()\n"
+                         "d['outside_y_retained'] = tv.retained_tempvars['y'] == 12\n"
+                         , 'Good_tempvarsPassedButNotPresent')
 
         for _ in ['inside_x_present', 'outside_x_present',
                   'inside_y_present', 'outside_y_absent',
                   'outside_y_retained']:
-            self.locals_subTest(_, locals(), True)
+            self.locals_subTest(_, d, True)
 
 
     def test_Good_startsPassed(self):
 
-        exec("from tempvars import TempVars\n"
-             "t_x = 5\n"
-             "t_y = 8\n"
-             "z_x = 14\n"
-             "with TempVars(starts=['t_']) as tv:\n"
-             "    inside_x = 't_x' in dir()\n"
-             "    inside_y = 't_y' in dir()\n"
-             "    inside_z = 'z_x' in dir()\n"
-             "outside_x = 't_x' in dir()\n"
-             "outside_y = 't_y' in dir()\n"
-             "outside_z = 'z_x' in dir()\n"
-             , locals())
+        d = self.runCode("from tempvars import TempVars\n"
+                         "d = {}\n"
+                         "t_x = 5\n"
+                         "t_y = 8\n"
+                         "z_x = 14\n"
+                         "with TempVars(starts=['t_']) as tv:\n"
+                         "    d['inside_x_absent'] = 't_x' not in dir()\n"
+                         "    d['inside_y_absent'] = 't_y' not in dir()\n"
+                         "    d['inside_z_present'] = 'z_x' in dir()\n"
+                         "d['outside_x_present'] = 't_x' in dir()\n"
+                         "d['outside_y_present'] = 't_y' in dir()\n"
+                         "d['outside_z_present'] = 'z_x' in dir()\n"
+                         , 'Good_startsPassed')
 
-        for _ in ['inside_x', 'inside_y']:
-            self.locals_subTest(_, locals(), False)
-
-        for _ in ['inside_z', 'outside_x', 'outside_y', 'outside_z']:
-            self.locals_subTest(_, locals(), True)
+        for _ in ['inside_x_absent', 'inside_y_absent',
+                  'inside_z_present', 'outside_x_present',
+                  'outside_y_present', 'outside_z_present']:
+            self.locals_subTest(_, d, True)
 
 
     def test_Good_endsPassed(self):
