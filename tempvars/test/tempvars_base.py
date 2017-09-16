@@ -40,7 +40,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_tempvarsPassed(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "x = 5\n"
@@ -56,7 +56,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_tempvarsPassed_NoRestore(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -73,7 +73,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_tempvarsPassedButNotPresent(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -96,7 +96,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_startsPassed(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -121,7 +121,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_endsPassed(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -146,7 +146,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_startsPassed_NoRestore(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -171,7 +171,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_endsPassed_NoRestore(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -196,7 +196,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_checkStorage_tempvarsNoRestore(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -225,7 +225,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_checkStorage_startsNoRestore(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "t_x = 5\n"
@@ -262,7 +262,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_checkStorage_endsNoRestore(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "t_x = 5\n"
@@ -299,7 +299,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_checkArgs(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -343,7 +343,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_tempvarsMultiPassed(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -377,7 +377,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_startsMultiPassed(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -411,7 +411,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     def test_Good_endsMultiPassed(self):
 
         # Ensure self.d is actually getting cleared/reset
-        assert(len(self.d) == 0)
+        assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
              "t_x = 5\n"
@@ -441,7 +441,69 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
 
-# Examining if expected behavior of nested contexts occurs (goal to allow mixed restore=True|False)
+    def test_Good_nestedVarsRestoreOuterOnly(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert len(self.d) == 0
+
+        exec("from tempvars import TempVars\n"
+             "x = 5\n"
+             "y = 8\n"
+             "z = 14\n"
+             "with TempVars(tempvars=['x'], restore=True) as tv_outer:\n"
+             "    in_1_before_2_x_absent = 'x' not in dir()\n"
+             "    in_1_before_2_y_present = 'y' in dir()\n"
+             "    in_1_before_2_z_present = 'z' in dir()\n"
+             "    with TempVars(tempvars=['y'], restore=False) as tv_inner:\n"
+             "        in_12_x_absent = 'x' not in dir()\n"
+             "        in_12_y_absent = 'y' not in dir()\n"
+             "        in_12_z_present = 'z' in dir()\n"
+             "    in_1_after_2_x_absent = 'x' not in dir()\n"
+             "    in_1_after_2_y_absent = 'y' not in dir()\n"
+             "    in_1_after_2_z_present = 'z' in dir()\n"
+             "after_12_x_present = 'x' in dir()\n"
+             "after_12_y_absent= 'y' not in dir()\n"
+             "after_12_z_present = 'z' in dir()\n"
+             , self.d)
+
+        for _ in ['in_1_before_2_x_absent', 'in_1_before_2_y_present', 'in_1_before_2_z_present',
+                  'in_12_x_absent', 'in_12_y_absent', 'in_12_z_present',
+                  'in_1_after_2_x_absent', 'in_1_after_2_y_absent', 'in_1_after_2_z_present',
+                  'after_12_x_present', 'after_12_y_absent', 'after_12_z_present']:
+            self.locals_subTest(_, self.d, True)
+
+
+    def test_Good_nestedVarsRestoreInnerOnly(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert len(self.d) == 0
+
+        exec("from tempvars import TempVars\n"
+             "x = 5\n"
+             "y = 8\n"
+             "z = 14\n"
+             "with TempVars(tempvars=['x'], restore=False) as tv_outer:\n"
+             "    in_1_before_2_x_absent = 'x' not in dir()\n"
+             "    in_1_before_2_y_present = 'y' in dir()\n"
+             "    in_1_before_2_z_present = 'z' in dir()\n"
+             "    with TempVars(tempvars=['y'], restore=True) as tv_inner:\n"
+             "        in_12_x_absent = 'x' not in dir()\n"
+             "        in_12_y_absent = 'y' not in dir()\n"
+             "        in_12_z_present = 'z' in dir()\n"
+             "    in_1_after_2_x_absent = 'x' not in dir()\n"
+             "    in_1_after_2_y_present = 'y' in dir()\n"
+             "    in_1_after_2_z_present = 'z' in dir()\n"
+             "after_12_x_absent = 'x' not in dir()\n"
+             "after_12_y_present= 'y' in dir()\n"
+             "after_12_z_present = 'z' in dir()\n"
+             , self.d)
+
+        for _ in ['in_1_before_2_x_absent', 'in_1_before_2_y_present', 'in_1_before_2_z_present',
+                  'in_12_x_absent', 'in_12_y_absent', 'in_12_z_present',
+                  'in_1_after_2_x_absent', 'in_1_after_2_y_present', 'in_1_after_2_z_present',
+                  'after_12_x_absent', 'after_12_y_present', 'after_12_z_present']:
+            self.locals_subTest(_, self.d, True)
+
 
 
 def suite_expect_good():
