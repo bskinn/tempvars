@@ -15,5 +15,5 @@
 
 import os.path as osp
 
-scratch_dir = osp.join('tempvars', 'test', 'scratch')
+scratch_dir = osp.join('test_scratch')
 scratch_fn = osp.join(scratch_dir, 'scratch.py')
