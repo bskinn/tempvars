@@ -37,10 +37,6 @@ def get_parser():
     prs.add_argument('-v', action='store_true',
                      help="Show verbose output")
 
-    # Argument to keep temp files around
-    prs.add_argument('-k', action='store_true',
-                     help="Keep temporary files")
-
     # Groups without subgroups
     prs.add_argument(AP.PFX.format(AP.ALL), '-a',
                      action='store_true',
@@ -57,13 +53,12 @@ def get_parser():
 
 
 def main():
-    import tempvars.test
-    from tempvars.test.consts import scratch_dir
-
     import os
     import os.path as osp
     import sys
     import unittest as ut
+
+    import tempvars.test
 
     # Retrieve the parser
     prs = get_parser()
@@ -85,10 +80,10 @@ def main():
 
     # Commandline tests per-group
     # Expect-good tests
-    addsuiteif(tempvars.test.tempvars_base.suite_expect_good(params['k']),
+    addsuiteif(tempvars.test.tempvars_base.suite_expect_good(),
                [AP.ALL, AP.GOOD])
     # Expect-fail tests
-    addsuiteif(tempvars.test.tempvars_base.suite_expect_fail(params['k']),
+    addsuiteif(tempvars.test.tempvars_base.suite_expect_fail(),
                [AP.ALL, AP.FAIL])
 
     # Create the test runner and execute

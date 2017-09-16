@@ -15,7 +15,7 @@
 
 from __future__ import absolute_import
 
-__all__ = ['tempvars_base', 'consts']
+__all__ = ['tempvars_base']
 
 from . import *
 
