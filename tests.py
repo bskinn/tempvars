@@ -21,6 +21,8 @@ class AP(object):
 
     """
     ALL = 'all'
+    GOOD = 'good'
+    FAIL = 'fail'
 
     PFX = "--{0}"
 
@@ -39,15 +41,24 @@ def get_parser():
     prs.add_argument(AP.PFX.format(AP.ALL), '-a',
                      action='store_true',
                      help="Run all tests (overrides any other selections)")
+    prs.add_argument(AP.PFX.format(AP.GOOD), '-g',
+                     action='store_true',
+                     help="Run all expect-good tests")
+    prs.add_argument(AP.PFX.format(AP.FAIL), '-f',
+                     action='store_true',
+                     help="Run all expect-fail tests")
 
     # Return the parser
     return prs
 
 
 def main():
-    import tempvars.test
+    import os
+    import os.path as osp
     import sys
     import unittest as ut
+
+    import tempvars.test
 
     # Retrieve the parser
     prs = get_parser()
@@ -68,9 +79,12 @@ def main():
             ts.addTest(suite)
 
     # Commandline tests per-group
-    # All tests
-    addsuiteif(tempvars.test.tempvars_base.suite_base(),
-               [AP.ALL])
+    # Expect-good tests
+    addsuiteif(tempvars.test.tempvars_base.suite_expect_good(),
+               [AP.ALL, AP.GOOD])
+    # Expect-fail tests
+    addsuiteif(tempvars.test.tempvars_base.suite_expect_fail(),
+               [AP.ALL, AP.FAIL])
 
     # Create the test runner and execute
     ttr = ut.TextTestRunner(buffer=True,

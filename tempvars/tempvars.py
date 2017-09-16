@@ -15,14 +15,13 @@
 
 
 import attr
-import inspect
 
 
 @attr.s()
 class TempVars(object):
 
     ### Arguments indicating variables to treat as temporary vars
-    tempvars = attr.ib(default=[])
+    tempvars = attr.ib(default=attr.Factory(list))
     starts = attr.ib(default=None, repr=False)
     ends = attr.ib(default=None, repr=False)
 
@@ -56,15 +55,9 @@ class TempVars(object):
     ### Flag for whether to restore the prior namespace contents
     restore = attr.ib(default=True, validator=attr.validators.instance_of(bool))
 
-    ### Namespace for temp variable management. Defaults to the local variables of the
-    # scope at which the TempVars instance was created. Python library docs
-    # frown at this, apparently:
-    #
-    #    https://docs.python.org/3/library/functions.html#locals
-    #
-    # If a different namespace is desired for some reason, it can be passed here
-    # Regardless, definitely don't want this in the `repr`, because it's a big
-    # honking mess of stuff.
+    ### Namespace for temp variable management.
+    # Always the globals at the level of the invoker of the TempVars
+    # instance (set below in ns_default).
     ns = attr.ib(repr=False, init=False)
 
     @ns.default
@@ -82,12 +75,23 @@ class TempVars(object):
     ### Internal vars, not set via the attrs __init__
     # Bucket for preserving variables temporarily removed from
     # the namespace
-    stored_nsvars = attr.ib(init=False, default={}, repr=False)
+    stored_nsvars = attr.ib(init=False, repr=False,
+                            default=attr.Factory(dict))
+
     # Bucket for retaining the temporary variables after the context is exited
-    stored_tempvars = attr.ib(init=False, default={}, repr=False)
+    retained_tempvars = attr.ib(init=False, repr=False,
+                                default=attr.Factory(dict))
+
+    # Bucket for documenting the initial vars passed to tempvars
+    passed_tempvars = attr.ib(init=False, repr=True,
+                              default=attr.Factory(list))
 
 
     def __enter__(self):
+        # Save the initial list of tempvars passed
+        for _ in self.tempvars:
+            self.passed_tempvars.append(_)
+
         # Search the namespace for anything matching the .starts or
         # .ends patterns
         for k in self.ns.keys():
@@ -115,7 +119,7 @@ class TempVars(object):
         # the storage dict
         for k in self.tempvars:
             if k in self.ns:
-                self.stored_tempvars.update({k: self.ns.pop(k)})
+                self.retained_tempvars.update({k: self.ns.pop(k)})
 
         # If restore is set, then repopulate the namespace with
         # the pre-existing values.  Otherwise, do nothing.
