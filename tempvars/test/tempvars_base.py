@@ -22,6 +22,10 @@ import unittest as ut
 class SuperTestTempVars(object):
     """Superclass for temp vars testing."""
 
+    def setUp(self):
+        # Init work dict
+        self.d = {}
+
     def locals_subTest(self, id, locdict, val):
         with self.subTest(id):
             if val:
@@ -35,19 +39,24 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
     def test_Good_tempvarsPassed(self):
 
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
+
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "x = 5\n"
              "with TempVars(tempvars=['x']) as tv:\n"
              "    inside_absent = 'x' not in dir()\n"
              "outside_present = 'x' in dir()\n"
-             , locals())
+             , self.d)
 
         for _ in ['inside_absent', 'outside_present']:
-            self.locals_subTest(_, locals(), True)
+            self.locals_subTest(_, self.d, True)
 
 
     def test_Good_tempvarsPassed_NoRestore(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -62,6 +71,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
 
     def test_Good_tempvarsPassedButNotPresent(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -82,6 +94,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
 
     def test_Good_startsPassed(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -105,6 +120,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
     def test_Good_endsPassed(self):
 
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
+
         exec("from tempvars import TempVars\n"
              "d = {}\n"
              "t_x = 5\n"
@@ -126,6 +144,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
 
     def test_Good_startsPassed_NoRestore(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -149,6 +170,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
     def test_Good_endsPassed_NoRestore(self):
 
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
+
         exec("from tempvars import TempVars\n"
              "d = {}\n"
              "t_x = 5\n"
@@ -170,6 +194,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
 
     def test_Good_checkStorage_tempvarsNoRestore(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -196,6 +223,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
 
     def test_Good_checkStorage_startsNoRestore(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
 
         exec("from tempvars import TempVars\n"
              "t_x = 5\n"
@@ -231,6 +261,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
     def test_Good_checkStorage_endsNoRestore(self):
 
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
+
         exec("from tempvars import TempVars\n"
              "t_x = 5\n"
              "before_val = t_x == 5\n"
@@ -264,6 +297,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
 
     def test_Good_checkArgs(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
 
         exec("from tempvars import TempVars\n"
              "d = {}\n"
@@ -306,6 +342,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
     def test_Good_tempvarsMultiPassed(self):
 
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
+
         exec("from tempvars import TempVars\n"
              "d = {}\n"
              "t_x = 5\n"
@@ -337,6 +376,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
     def test_Good_startsMultiPassed(self):
 
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
+
         exec("from tempvars import TempVars\n"
              "d = {}\n"
              "t_x = 5\n"
@@ -367,6 +409,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
 
     def test_Good_endsMultiPassed(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert(len(self.d) == 0)
 
         exec("from tempvars import TempVars\n"
              "t_x = 5\n"
