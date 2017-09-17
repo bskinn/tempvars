@@ -27,7 +27,7 @@ class SuperTestTempVars(object):
         self.d = {}
 
     def locals_subTest(self, id, locdict, val):
-        with self.subTest(id):
+        with self.subTest(id):    # pragma: no cover
             if val:
                 self.assertTrue(locdict[id])
             else:

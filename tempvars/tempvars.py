@@ -146,3 +146,8 @@ class TempVars(object):
 
         # Containing code should handle any exception raised
         return False
+
+
+if __name__ == '__main__':  # pragma: no cover
+    print("Module not executable.")
+
