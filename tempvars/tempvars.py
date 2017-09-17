@@ -121,6 +121,24 @@ class TempVars(object):
             if k in self.ns:
                 self.retained_tempvars.update({k: self.ns.pop(k)})
 
+        # Check for any new variables that match `starts` and/or
+        # `ends` and pop them into the storage dict as well
+        vars_to_pop = []
+        for k in self.ns.keys():
+            if self.starts is not None:
+                for sw in self.starts:
+                    if k.startswith(sw):
+                        vars_to_pop.append(k)
+
+            if self.ends is not None:
+                for ew in self.ends:
+                    if k.endswith(ew):
+                        vars_to_pop.append(k)
+
+        for k in vars_to_pop:
+            if k not in self.retained_tempvars.keys():
+                self.retained_tempvars.update({k: self.ns.pop(k)})
+
         # If restore is set, then repopulate the namespace with
         # the pre-existing values.  Otherwise, do nothing.
         if self.restore:

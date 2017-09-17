@@ -59,7 +59,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "x = 5\n"
              "with TempVars(tempvars=['x'], restore=False) as tv:\n"
              "    inside_absent = 'x' not in dir()\n"
@@ -76,7 +75,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "x = 5\n"
              "with TempVars(tempvars=['y']) as tv:\n"
              "    y = 12\n"
@@ -99,7 +97,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "t_x = 5\n"
              "t_y = 8\n"
              "z_x = 14\n"
@@ -124,7 +121,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "t_x = 5\n"
              "t_y = 8\n"
              "z_x = 14\n"
@@ -149,7 +145,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "t_x = 5\n"
              "t_y = 8\n"
              "z_x = 14\n"
@@ -174,7 +169,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "t_x = 5\n"
              "t_y = 8\n"
              "z_x = 14\n"
@@ -199,7 +193,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "x = 5\n"
              "before_val = x == 5\n"
              "with TempVars(tempvars=['x'], restore=False) as tv:\n"
@@ -302,7 +295,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "t_x = 5\n"
              "t_y = 8\n"
              "r_x = 12\n"
@@ -311,31 +303,31 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "g_r = 43\n"
              "with TempVars(tempvars=['g_r'], starts=['t_'], ends=['_z']) as tv:\n"
              "    g_r_absent = 'g_r' not in dir()\n"
-             "    t_x_absent = 't_x' not in dir()\n"
-             "    t_y_absent = 't_y' not in dir()\n"
+             "    _t_x_absent = 't_x' not in dir()\n"
+             "    _t_y_absent = 't_y' not in dir()\n"
              "    r_x_present = 'r_x' in dir()\n"
              "    f_z_absent = 'f_z' not in dir()\n"
              "    d_z_absent = 'd_z' not in dir()\n"
              "    g_r_in_tempvars = 'g_r' in tv.tempvars\n"
-             "    t_x_in_tempvars = 't_x' in tv.tempvars\n"
-             "    t_y_in_tempvars = 't_y' in tv.tempvars\n"
+             "    _t_x_in_tempvars = 't_x' in tv.tempvars\n"
+             "    _t_y_in_tempvars = 't_y' in tv.tempvars\n"
              "    r_x_not_in_tempvars = 'r_x' not in tv.tempvars\n"
              "    f_z_in_tempvars = 'f_z' in tv.tempvars\n"
              "    d_z_in_tempvars = 'd_z' in tv.tempvars\n"
              "    g_r_in_passed_tempvars = 'g_r' in tv.passed_tempvars\n"
-             "    t_x_not_in_passed_tempvars = 't_x' not in tv.passed_tempvars\n"
-             "    t_y_not_in_passed_tempvars = 't_y' not in tv.passed_tempvars\n"
+             "    _t_x_not_in_passed_tempvars = 't_x' not in tv.passed_tempvars\n"
+             "    _t_y_not_in_passed_tempvars = 't_y' not in tv.passed_tempvars\n"
              "    r_x_not_in_passed_tempvars = 'r_x' not in tv.passed_tempvars\n"
              "    f_z_not_in_passed_tempvars = 'f_z' not in tv.passed_tempvars\n"
              "    d_z_not_in_passed_tempvars = 'd_z' not in tv.passed_tempvars\n"
              , self.d)
 
-        for _ in ['g_r_absent', 't_x_absent', 't_y_absent',
+        for _ in ['g_r_absent', '_t_x_absent', '_t_y_absent',
                   'r_x_present', 'f_z_absent', 'd_z_absent',
-                  'g_r_in_tempvars', 't_x_in_tempvars', 't_y_in_tempvars',
+                  'g_r_in_tempvars', '_t_x_in_tempvars', '_t_y_in_tempvars',
                   'r_x_not_in_tempvars', 'f_z_in_tempvars', 'd_z_in_tempvars',
-                  'g_r_in_passed_tempvars', 't_x_not_in_passed_tempvars',
-                  't_y_not_in_passed_tempvars', 'r_x_not_in_passed_tempvars',
+                  'g_r_in_passed_tempvars', '_t_x_not_in_passed_tempvars',
+                  '_t_y_not_in_passed_tempvars', 'r_x_not_in_passed_tempvars',
                   'f_z_not_in_passed_tempvars', 'd_z_not_in_passed_tempvars']:
             self.locals_subTest(_, self.d, True)
 
@@ -346,7 +338,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "t_x = 5\n"
              "t_y = 8\n"
              "z_x = 14\n"
@@ -380,7 +371,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "d = {}\n"
              "t_x = 5\n"
              "t_y = 8\n"
              "z_x = 14\n"
