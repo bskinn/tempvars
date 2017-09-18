@@ -21,14 +21,14 @@ import attr
 class TempVars(object):
 
     ### Arguments indicating variables to treat as temporary vars
-    tempvars = attr.ib(default=attr.Factory(list))
-    starts = attr.ib(default=None, repr=False)
-    ends = attr.ib(default=None, repr=False)
+    names = attr.ib(default=attr.Factory(list))
+    starts = attr.ib(default=None)
+    ends = attr.ib(default=None)
 
-    @tempvars.validator
+    @names.validator
     @starts.validator
     @ends.validator
-    def must_be_None_or_iterable_of_string(self, at, val):
+    def _must_be_None_or_iterable_of_string(self, at, val):
         # Standard error for failure return
         te = TypeError("'{0}' must be a list of str".format(at.name))
 
@@ -41,35 +41,39 @@ class TempVars(object):
         for s in val:
             if type(s) != str:
                 raise te
-            if at.name != 'tempvars' and (s == '_' or s == '__'):
+            if at.name != 'names' and (s == '_' or s == '__'):
                 raise ValueError("'_' and '__' are not permitted "
                                  "for '{0}'".format(at.name))
-        else:
-            # Reached the end of the list, so everything's fine
-            return
-
-        # Fall-through to this point means it's something other than
-        # a list of strings
-        raise te
 
     ### Flag for whether to restore the prior namespace contents
     restore = attr.ib(default=True, validator=attr.validators.instance_of(bool))
 
     ### Namespace for temp variable management.
     # Always the globals at the level of the invoker of the TempVars
-    # instance (set below in ns_default).
+    # instance (set below in _ns_default).
     ns = attr.ib(repr=False, init=False)
 
     @ns.default
-    def ns_default(self):
+    def _ns_default(self):
         import inspect
+
         # Need two f_back's since this call is inside a method that's
-        # inside a class. This default needs to be crafted this way
+        # inside a class.
+        fm = inspect.currentframe().f_back.f_back
+
+        # Refuse to work if not in top-level scope, since it's *known*
+        # to behave incorrectly
+        if fm.f_locals is not fm.f_globals:
+            raise RuntimeError("TempVars can only be used in the global scope")
+
+        # This default needs to be crafted this way
         # because it's evaluated at run time, during instantiation.
-        # Putting the globals() retrieval directly in the attr.ib()
+        # Putting the globals() retrieval attempt directly in the attr.ib()
         # signature above would make the evaluation occur at
         # definition time(? at import?), which apparently changes
-        # the relevant scope in a significant way.
+        # the relevant scope in a significant way (likely it makes
+        # this module the accessed scope, rather than the scope of
+        # the instantiation call.
         return inspect.currentframe().f_back.f_back.f_globals
 
     ### Internal vars, not set via the attrs __init__
@@ -83,14 +87,14 @@ class TempVars(object):
                                 default=attr.Factory(dict))
 
     # Bucket for documenting the initial vars passed to tempvars
-    passed_tempvars = attr.ib(init=False, repr=True,
+    passed_names = attr.ib(init=False, repr=True,
                               default=attr.Factory(list))
 
 
     def __enter__(self):
         # Save the initial list of tempvars passed
-        for _ in self.tempvars:
-            self.passed_tempvars.append(_)
+        for _ in self.names:
+            self.passed_names.append(_)
 
         # Search the namespace for anything matching the .starts or
         # .ends patterns
@@ -98,16 +102,16 @@ class TempVars(object):
             if self.starts is not None:
                 for sw in self.starts:
                     if k.startswith(sw):
-                        self.tempvars.append(k)
+                        self.names.append(k)
 
             if self.ends is not None:
                 for ew in self.ends:
                     if k.endswith(ew):
-                        self.tempvars.append(k)
+                        self.names.append(k)
 
-        # Now that all of the variables have been identified,
+        # Now that all of the variable names have been identified,
         # pop any values that exist from the namespace and store
-        for k in self.tempvars:
+        for k in self.names:
             if k in self.ns:
                 self.stored_nsvars.update({k: self.ns.pop(k)})
 
@@ -117,7 +121,7 @@ class TempVars(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Pop any existing temp variables from the ns and into
         # the storage dict
-        for k in self.tempvars:
+        for k in self.names:
             if k in self.ns:
                 self.retained_tempvars.update({k: self.ns.pop(k)})
 
@@ -146,3 +150,8 @@ class TempVars(object):
 
         # Containing code should handle any exception raised
         return False
+
+
+if __name__ == '__main__':  # pragma: no cover
+    print("Module not executable.")
+
