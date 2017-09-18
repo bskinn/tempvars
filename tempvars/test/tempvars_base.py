@@ -495,6 +495,54 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
 
+class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
+    """Testing that code raises expected errors when invoked improperly."""
+
+    list_args = ['tempvars', 'starts', 'ends']
+
+    def test_Fail_ArgIsNotListOrNone(self):
+
+        code = 'from tempvars import TempVars; TempVars({0}=1)'
+
+        for arg in self.list_args:
+            with self.subTest(arg):
+                self.assertRaises(TypeError, exec, code.format(arg), {})
+
+
+    def test_Fail_ArgListHasNonString(self):
+
+        code = 'from tempvars import TempVars; TempVars({0}=["abcde", 1])'
+
+        for arg in self.list_args:
+            with self.subTest(arg):
+                self.assertRaises(TypeError, exec, code.format(arg), {})
+
+
+    def test_Fail_UnderArgs(self):
+
+        code = 'from tempvars import TempVars; TempVars({0}=["abc", "{1}", "pqr"])'
+
+        for arg in ['starts', 'ends']:
+            for val in ['_', '__']:
+                with self.subTest('{0}-{1}'.format(arg, val)):
+                    self.assertRaises(ValueError, exec, code.format(arg, val), {})
+
+    def test_Fail_NonBooleanRestore(self):
+
+        code = 'from tempvars import TempVars; TempVars(tempvars=["abc"], restore=1)'
+
+        self.assertRaises(TypeError, exec, code, {})
+
+
+    def test_Fail_NonGlobalScope(self):
+
+        from tempvars import TempVars
+
+        with self.assertRaises(RuntimeError):
+            with TempVars(tempvars=['abcd']) as tv:
+                pass    # pragma: no cover
+
+
 
 def suite_expect_good():
     s = ut.TestSuite()
@@ -507,7 +555,7 @@ def suite_expect_good():
 def suite_expect_fail():
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests([])
+    s.addTests([tl.loadTestsFromTestCase(TestTempVarsExpectFail)])
 
     return s
 

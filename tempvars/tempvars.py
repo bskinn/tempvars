@@ -28,7 +28,7 @@ class TempVars(object):
     @tempvars.validator
     @starts.validator
     @ends.validator
-    def must_be_None_or_iterable_of_string(self, at, val):
+    def _must_be_None_or_iterable_of_string(self, at, val):
         # Standard error for failure return
         te = TypeError("'{0}' must be a list of str".format(at.name))
 
@@ -44,32 +44,36 @@ class TempVars(object):
             if at.name != 'tempvars' and (s == '_' or s == '__'):
                 raise ValueError("'_' and '__' are not permitted "
                                  "for '{0}'".format(at.name))
-        else:
-            # Reached the end of the list, so everything's fine
-            return
-
-        # Fall-through to this point means it's something other than
-        # a list of strings
-        raise te
 
     ### Flag for whether to restore the prior namespace contents
     restore = attr.ib(default=True, validator=attr.validators.instance_of(bool))
 
     ### Namespace for temp variable management.
     # Always the globals at the level of the invoker of the TempVars
-    # instance (set below in ns_default).
+    # instance (set below in _ns_default).
     ns = attr.ib(repr=False, init=False)
 
     @ns.default
-    def ns_default(self):
+    def _ns_default(self):
         import inspect
+
         # Need two f_back's since this call is inside a method that's
-        # inside a class. This default needs to be crafted this way
+        # inside a class.
+        fm = inspect.currentframe().f_back.f_back
+
+        # Refuse to work if not in top-level scope, since it's *known*
+        # to behave incorrectly
+        if fm.f_locals is not fm.f_globals:
+            raise RuntimeError("TempVars can only be used in the global scope")
+
+        # This default needs to be crafted this way
         # because it's evaluated at run time, during instantiation.
-        # Putting the globals() retrieval directly in the attr.ib()
+        # Putting the globals() retrieval attempt directly in the attr.ib()
         # signature above would make the evaluation occur at
         # definition time(? at import?), which apparently changes
-        # the relevant scope in a significant way.
+        # the relevant scope in a significant way (likely it makes
+        # this module the accessed scope, rather than the scope of
+        # the instantiation call.
         return inspect.currentframe().f_back.f_back.f_globals
 
     ### Internal vars, not set via the attrs __init__
