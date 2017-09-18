@@ -21,11 +21,11 @@ import attr
 class TempVars(object):
 
     ### Arguments indicating variables to treat as temporary vars
-    tempvars = attr.ib(default=attr.Factory(list))
-    starts = attr.ib(default=None, repr=False)
-    ends = attr.ib(default=None, repr=False)
+    names = attr.ib(default=attr.Factory(list))
+    starts = attr.ib(default=None)
+    ends = attr.ib(default=None)
 
-    @tempvars.validator
+    @names.validator
     @starts.validator
     @ends.validator
     def _must_be_None_or_iterable_of_string(self, at, val):
@@ -41,7 +41,7 @@ class TempVars(object):
         for s in val:
             if type(s) != str:
                 raise te
-            if at.name != 'tempvars' and (s == '_' or s == '__'):
+            if at.name != 'names' and (s == '_' or s == '__'):
                 raise ValueError("'_' and '__' are not permitted "
                                  "for '{0}'".format(at.name))
 
@@ -87,14 +87,14 @@ class TempVars(object):
                                 default=attr.Factory(dict))
 
     # Bucket for documenting the initial vars passed to tempvars
-    passed_tempvars = attr.ib(init=False, repr=True,
+    passed_names = attr.ib(init=False, repr=True,
                               default=attr.Factory(list))
 
 
     def __enter__(self):
         # Save the initial list of tempvars passed
-        for _ in self.tempvars:
-            self.passed_tempvars.append(_)
+        for _ in self.names:
+            self.passed_names.append(_)
 
         # Search the namespace for anything matching the .starts or
         # .ends patterns
@@ -102,16 +102,16 @@ class TempVars(object):
             if self.starts is not None:
                 for sw in self.starts:
                     if k.startswith(sw):
-                        self.tempvars.append(k)
+                        self.names.append(k)
 
             if self.ends is not None:
                 for ew in self.ends:
                     if k.endswith(ew):
-                        self.tempvars.append(k)
+                        self.names.append(k)
 
-        # Now that all of the variables have been identified,
+        # Now that all of the variable names have been identified,
         # pop any values that exist from the namespace and store
-        for k in self.tempvars:
+        for k in self.names:
             if k in self.ns:
                 self.stored_nsvars.update({k: self.ns.pop(k)})
 
@@ -121,7 +121,7 @@ class TempVars(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Pop any existing temp variables from the ns and into
         # the storage dict
-        for k in self.tempvars:
+        for k in self.names:
             if k in self.ns:
                 self.retained_tempvars.update({k: self.ns.pop(k)})
 

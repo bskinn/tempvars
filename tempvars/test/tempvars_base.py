@@ -44,7 +44,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
         exec("from tempvars import TempVars\n"
              "x = 5\n"
-             "with TempVars(tempvars=['x']) as tv:\n"
+             "with TempVars(names=['x']) as tv:\n"
              "    inside_absent = 'x' not in dir()\n"
              "outside_present = 'x' in dir()\n"
              , self.d)
@@ -60,7 +60,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
         exec("from tempvars import TempVars\n"
              "x = 5\n"
-             "with TempVars(tempvars=['x'], restore=False) as tv:\n"
+             "with TempVars(names=['x'], restore=False) as tv:\n"
              "    inside_absent = 'x' not in dir()\n"
              "outside_absent = 'x' not in dir()\n"
              , self.d)
@@ -76,7 +76,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
         exec("from tempvars import TempVars\n"
              "x = 5\n"
-             "with TempVars(tempvars=['y']) as tv:\n"
+             "with TempVars(names=['y']) as tv:\n"
              "    y = 12\n"
              "    inside_x_present = 'x' in dir()\n"
              "    inside_y_present = 'y' in dir()\n"
@@ -195,7 +195,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         exec("from tempvars import TempVars\n"
              "x = 5\n"
              "before_val = x == 5\n"
-             "with TempVars(tempvars=['x'], restore=False) as tv:\n"
+             "with TempVars(names=['x'], restore=False) as tv:\n"
              "    inside_initial_absent = 'x' not in dir()\n"
              "    inside_stored_nsvar = tv.stored_nsvars.get('x') == 5\n"
              "    x = 18\n"
@@ -301,34 +301,34 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "f_z = 59\n"
              "d_z = 12\n"
              "g_r = 43\n"
-             "with TempVars(tempvars=['g_r'], starts=['t_'], ends=['_z']) as tv:\n"
+             "with TempVars(names=['g_r'], starts=['t_'], ends=['_z']) as tv:\n"
              "    g_r_absent = 'g_r' not in dir()\n"
              "    _t_x_absent = 't_x' not in dir()\n"
              "    _t_y_absent = 't_y' not in dir()\n"
              "    r_x_present = 'r_x' in dir()\n"
              "    f_z_absent = 'f_z' not in dir()\n"
              "    d_z_absent = 'd_z' not in dir()\n"
-             "    g_r_in_tempvars = 'g_r' in tv.tempvars\n"
-             "    _t_x_in_tempvars = 't_x' in tv.tempvars\n"
-             "    _t_y_in_tempvars = 't_y' in tv.tempvars\n"
-             "    r_x_not_in_tempvars = 'r_x' not in tv.tempvars\n"
-             "    f_z_in_tempvars = 'f_z' in tv.tempvars\n"
-             "    d_z_in_tempvars = 'd_z' in tv.tempvars\n"
-             "    g_r_in_passed_tempvars = 'g_r' in tv.passed_tempvars\n"
-             "    _t_x_not_in_passed_tempvars = 't_x' not in tv.passed_tempvars\n"
-             "    _t_y_not_in_passed_tempvars = 't_y' not in tv.passed_tempvars\n"
-             "    r_x_not_in_passed_tempvars = 'r_x' not in tv.passed_tempvars\n"
-             "    f_z_not_in_passed_tempvars = 'f_z' not in tv.passed_tempvars\n"
-             "    d_z_not_in_passed_tempvars = 'd_z' not in tv.passed_tempvars\n"
+             "    g_r_in_names = 'g_r' in tv.names\n"
+             "    _t_x_in_names = 't_x' in tv.names\n"
+             "    _t_y_in_names = 't_y' in tv.names\n"
+             "    r_x_not_in_names = 'r_x' not in tv.names\n"
+             "    f_z_in_names = 'f_z' in tv.names\n"
+             "    d_z_in_names = 'd_z' in tv.names\n"
+             "    g_r_in_passed_names = 'g_r' in tv.passed_names\n"
+             "    _t_x_not_in_passed_names = 't_x' not in tv.passed_names\n"
+             "    _t_y_not_in_passed_names = 't_y' not in tv.passed_names\n"
+             "    r_x_not_in_passed_names = 'r_x' not in tv.passed_names\n"
+             "    f_z_not_in_passed_names = 'f_z' not in tv.passed_names\n"
+             "    d_z_not_in_passed_names = 'd_z' not in tv.passed_names\n"
              , self.d)
 
         for _ in ['g_r_absent', '_t_x_absent', '_t_y_absent',
                   'r_x_present', 'f_z_absent', 'd_z_absent',
-                  'g_r_in_tempvars', '_t_x_in_tempvars', '_t_y_in_tempvars',
-                  'r_x_not_in_tempvars', 'f_z_in_tempvars', 'd_z_in_tempvars',
-                  'g_r_in_passed_tempvars', '_t_x_not_in_passed_tempvars',
-                  '_t_y_not_in_passed_tempvars', 'r_x_not_in_passed_tempvars',
-                  'f_z_not_in_passed_tempvars', 'd_z_not_in_passed_tempvars']:
+                  'g_r_in_names', '_t_x_in_names', '_t_y_in_names',
+                  'r_x_not_in_names', 'f_z_in_names', 'd_z_in_names',
+                  'g_r_in_passed_names', '_t_x_not_in_passed_names',
+                  '_t_y_not_in_passed_names', 'r_x_not_in_passed_names',
+                  'f_z_not_in_passed_names', 'd_z_not_in_passed_names']:
             self.locals_subTest(_, self.d, True)
 
 
@@ -343,7 +343,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "z_x = 14\n"
              "z_m = 24\n"
              "r_x = 44\n"
-             "with TempVars(tempvars=['t_x', 'z_m']) as tv:\n"
+             "with TempVars(names=['t_x', 'z_m']) as tv:\n"
              "    inside_t_x_absent = 't_x' not in dir()\n"
              "    inside_t_y_present = 't_y' in dir()\n"
              "    inside_z_x_present = 'z_x' in dir()\n"
@@ -440,11 +440,11 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "x = 5\n"
              "y = 8\n"
              "z = 14\n"
-             "with TempVars(tempvars=['x'], restore=True) as tv_outer:\n"
+             "with TempVars(names=['x'], restore=True) as tv_outer:\n"
              "    in_1_before_2_x_absent = 'x' not in dir()\n"
              "    in_1_before_2_y_present = 'y' in dir()\n"
              "    in_1_before_2_z_present = 'z' in dir()\n"
-             "    with TempVars(tempvars=['y'], restore=False) as tv_inner:\n"
+             "    with TempVars(names=['y'], restore=False) as tv_inner:\n"
              "        in_12_x_absent = 'x' not in dir()\n"
              "        in_12_y_absent = 'y' not in dir()\n"
              "        in_12_z_present = 'z' in dir()\n"
@@ -472,11 +472,11 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "x = 5\n"
              "y = 8\n"
              "z = 14\n"
-             "with TempVars(tempvars=['x'], restore=False) as tv_outer:\n"
+             "with TempVars(names=['x'], restore=False) as tv_outer:\n"
              "    in_1_before_2_x_absent = 'x' not in dir()\n"
              "    in_1_before_2_y_present = 'y' in dir()\n"
              "    in_1_before_2_z_present = 'z' in dir()\n"
-             "    with TempVars(tempvars=['y'], restore=True) as tv_inner:\n"
+             "    with TempVars(names=['y'], restore=True) as tv_inner:\n"
              "        in_12_x_absent = 'x' not in dir()\n"
              "        in_12_y_absent = 'y' not in dir()\n"
              "        in_12_z_present = 'z' in dir()\n"
@@ -529,7 +529,7 @@ class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
 
     def test_Fail_NonBooleanRestore(self):
 
-        code = 'from tempvars import TempVars; TempVars(tempvars=["abc"], restore=1)'
+        code = 'from tempvars import TempVars; TempVars(names=["abc"], restore=1)'
 
         self.assertRaises(TypeError, exec, code, {})
 
@@ -539,7 +539,7 @@ class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
         from tempvars import TempVars
 
         with self.assertRaises(RuntimeError):
-            with TempVars(tempvars=['abcd']) as tv:
+            with TempVars(names=['abcd']) as tv:
                 pass    # pragma: no cover
 
 
