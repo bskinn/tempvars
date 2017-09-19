@@ -4,8 +4,8 @@ tempvars
 *A context manager for handling temporary variables in Jupyter Notebook,
 IPython, etc.*
 
-One of the most frustrating aspects of working with Jupyter notebooks
-(for me, anyways) is debugging a worksheet for half an hour
+A frustrating aspect of working with Jupyter notebooks
+is debugging a worksheet for half an hour
 and discovering a carried-over variable name was hanging around
 in the notebook namespace and causing
 the misbehavior. The ``TempVars`` context manager clears selected
@@ -15,7 +15,7 @@ variables created within the managed context
 that match the criteria passed to ``TempVars`` are removed from
 the namespace upon exiting. For convenience, all variables
 that were removed from the namespace at both entry and exit
-are stored for later reference (see example code below).
+are stored with their values for later reference (see example code below).
 
 **NOTE:** Due to the way Python handles non-global variable scopes, ``TempVars``
 can only be used at the global scope. *Any attempt
