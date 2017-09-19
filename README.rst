@@ -4,26 +4,32 @@ tempvars
 *A context manager for handling temporary variables in Jupyter Notebook,
 IPython, etc.*
 
-There's little worse than debugging a worksheet for half an hour
-and discovering a typo or carried-over variable name was causing
+One of the most frustrating aspects of working with Jupyter notebooks
+(for me, anyways) is debugging a worksheet for half an hour
+and discovering a carried-over variable name was hanging around
+in the notebook namespace and causing
 the misbehavior. The ``TempVars`` context manager clears selected
 identifiers from the namespace for the duration of the ``with``
-suite, then restores them afterwards (or not, if desired). Any pre-existing
-variables as well as variables created within the managed context
+suite, then restores them afterwards (or not, if desired). Further, any
+variables created within the managed context
 that match the criteria passed to ``TempVars`` are removed from
 the namespace upon exiting. For convenience, all variables
-removed from the namespace at both entry and exit to the context manager
+that were removed from the namespace at both entry and exit
 are stored for later reference (see example code below).
 
 **NOTE:** Due to the way Python handles non-global variable scopes, ``TempVars``
-can only be used at the global scope. Such contexts include Jupyter notebooks,
-the IPython and basic Python REPLs, and at the base scope of executed and
-imported modules. Attempts to use ``TempVars`` in non-global contexts will
-result in a ``RuntimeError``.
+can only be used at the global scope. *Any attempt
+to use* ``TempVars`` *in non-global contexts will
+result in a* ``RuntimeError``. Viable use-cases include Jupyter notebooks,
+the IPython and basic Python REPLs, and the outermost scope of executed and
+imported modules. Preliminary testing indicates it also works with
+`cauldron-notebook <https://github.com/sernst/cauldron>`__, though
+it may be less helpful there due to the step-local scoping paradigm used
+(shared values must be passed around via ``cauldron.shared``).
 
 **NOTE ALSO** that ``tempvars`` is *Python 3 only*.
 
-After installing, import as:
+After installing with ``pip install tempvars``, import as:
 
 .. code:: python
 
@@ -80,7 +86,7 @@ Administrative
 Branches named with the prefix `v.` are volatile. The history there
 may be rewritten dramatically, without warning.
 
-Available (soon) on PyPI: ``pip install tempvars``.
+Available on PyPI: ``pip install tempvars``.
 
 Source on `GitHub <https://github.com/bskinn/tempvars>`__.
 
