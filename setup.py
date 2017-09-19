@@ -6,7 +6,7 @@ def readme():
 
 setup(
     name='tempvars',
-    version='0.0',
+    version='1.0b1',
     provides=['tempvars'],
     install_requires=['attrs>=17'],
     packages=['tempvars'],

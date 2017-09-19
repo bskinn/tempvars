@@ -27,5 +27,5 @@ from __future__ import absolute_import
 
 from .tempvars import TempVars
 
-__version__ = '0.0'
+__version__ = '1.0b1'
 
