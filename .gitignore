@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# ISPHX_LOCAL
+doc/source/isphx/*
+
+# NoteTab Light backup files
+*.bak
