@@ -20,7 +20,7 @@ import attr
 @attr.s()
 class TempVars(object):
 
-    ### Arguments indicating variables to treat as temporary vars
+    # ## Arguments indicating variables to treat as temporary vars
     names = attr.ib(default=attr.Factory(list))
     starts = attr.ib(default=None)
     ends = attr.ib(default=None)
@@ -45,10 +45,11 @@ class TempVars(object):
                 raise ValueError("'_' and '__' are not permitted "
                                  "for '{0}'".format(at.name))
 
-    ### Flag for whether to restore the prior namespace contents
-    restore = attr.ib(default=True, validator=attr.validators.instance_of(bool))
+    # ## Flag for whether to restore the prior namespace contents
+    restore = attr.ib(default=True,
+                      validator=attr.validators.instance_of(bool))
 
-    ### Namespace for temp variable management.
+    # ## Namespace for temp variable management.
     # Always the globals at the level of the invoker of the TempVars
     # instance (set below in _ns_default).
     ns = attr.ib(repr=False, init=False)
@@ -76,7 +77,7 @@ class TempVars(object):
         # the instantiation call.
         return inspect.currentframe().f_back.f_back.f_globals
 
-    ### Internal vars, not set via the attrs __init__
+    # ## Internal vars, not set via the attrs __init__
     # Bucket for preserving variables temporarily removed from
     # the namespace
     stored_nsvars = attr.ib(init=False, repr=False,
@@ -88,8 +89,7 @@ class TempVars(object):
 
     # Bucket for documenting the initial vars passed to tempvars
     passed_names = attr.ib(init=False, repr=True,
-                              default=attr.Factory(list))
-
+                           default=attr.Factory(list))
 
     def __enter__(self):
         # Save the initial list of tempvars passed
@@ -154,4 +154,3 @@ class TempVars(object):
 
 if __name__ == '__main__':  # pragma: no cover
     print("Module not executable.")
-

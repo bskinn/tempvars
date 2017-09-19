@@ -6,7 +6,7 @@ def readme():
 
 setup(
     name='tempvars',
-    version='0.0',
+    version='1.0b1',
     provides=['tempvars'],
     install_requires=['attrs>=17'],
     packages=['tempvars'],
@@ -14,11 +14,10 @@ setup(
     license='MIT License',
     author='Brian Skinn',
     author_email='bskinn@alum.mit.edu',
-    description='Context Manager for Handling Temporary Variables',
+    description='Context manager for handling temporary variables',
     long_description=readme(),
     classifiers=['License :: OSI Approved :: MIT License',
                  'Natural Language :: English',
-                 'Environment :: Console',
                  'Intended Audience :: Science/Research',
                  'Intended Audience :: Developers',
                  'Operating System :: OS Independent',
