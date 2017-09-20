@@ -1,5 +1,5 @@
 install:
- - pip install attrs
+ - pip install -r requirements-travis.txt
 language: python
 python:
  - 3.4
