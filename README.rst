@@ -83,7 +83,7 @@ Output::
 Administrative
 --------------
 
-Branches named with the prefix `v.` are volatile. The history there
+Branches named with the prefix ``v.`` are volatile. The history there
 may be rewritten dramatically, without warning.
 
 Available on PyPI: ``pip install tempvars``.
