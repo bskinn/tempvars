@@ -44,6 +44,10 @@ class TempVars(object):
             if at.name != 'names' and (s == '_' or s == '__'):
                 raise ValueError("'_' and '__' are not permitted "
                                  "for '{0}'".format(at.name))
+            if at.name == 'starts' and s.startswith('__'):
+                raise ValueError("'starts' may not start with '__'")
+            if at.name == 'ends' and s.endswith('__'):
+                raise ValueError("'ends' may not end with '__'")
 
     # ## Flag for whether to restore the prior namespace contents
     restore = attr.ib(default=True,

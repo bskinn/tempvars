@@ -527,6 +527,13 @@ class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
                 with self.subTest('{0}-{1}'.format(arg, val)):
                     self.assertRaises(ValueError, exec, code.format(arg, val), {})
 
+        with self.subTest('starts-any-dunder-start'):
+            self.assertRaises(ValueError, exec, code.format('starts', '__d'), {})
+
+        with self.subTest('ends-any-dunder-end'):
+            self.assertRaises(ValueError, exec, code.format('ends', 's__'), {})
+
+
     def test_Fail_NonBooleanRestore(self):
 
         code = 'from tempvars import TempVars; TempVars(names=["abc"], restore=1)'
