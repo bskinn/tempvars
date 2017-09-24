@@ -494,21 +494,34 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
                   'after_12_x_absent', 'after_12_y_present', 'after_12_z_present']:
             self.locals_subTest(_, self.d, True)
 
-    def test_Good_NonMutableNamesArg(self):
+
+    def test_Good_NonMutableNamesStartsEndsArgs(self):
 
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
         exec("from tempvars import TempVars\n"
-             "n = ['abc', 'qrs']\n"
+             "n = ['xyz', 'fnq']\n"
+             "s = ['abc_', 'qrs_']\n"
+             "e = ['_mnp', '_fzr']\n"
              "before_n_len = len(n) == 2\n"
-             "t_var = 6\n"
-             "with TempVars(names=n, starts=['t_']) as tv:\n"
+             "before_s_len = len(s) == 2\n"
+             "before_e_len = len(e) == 2\n"
+             "t_fzr = 6\n"
+             "xyz = 12\n"
+             "abc_x = 35\n"
+             "with TempVars(names=n, starts=s, ends=e) as tv:\n"
              "    inside_n_len = len(n) == 2\n"
+             "    inside_s_len = len(s) == 2\n"
+             "    inside_e_len = len(e) == 2\n"
              "outside_n_len = len(n) == 2\n"
+             "outside_s_len = len(s) == 2\n"
+             "outside_e_len = len(e) == 2\n"
              , self.d)
 
-        for _ in ['before_n_len', 'inside_n_len', 'outside_n_len']:
+        for _ in ['before_n_len', 'inside_n_len', 'outside_n_len',
+                  'before_s_len', 'inside_s_len', 'outside_s_len',
+                  'before_e_len', 'inside_e_len', 'outside_e_len']:
             self.locals_subTest(_, self.d, True)
 
 
