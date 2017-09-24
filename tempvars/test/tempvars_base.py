@@ -494,6 +494,23 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
                   'after_12_x_absent', 'after_12_y_present', 'after_12_z_present']:
             self.locals_subTest(_, self.d, True)
 
+    def test_Good_NonMutableNamesArg(self):
+
+        # Ensure self.d is actually getting cleared/reset
+        assert len(self.d) == 0
+
+        exec("from tempvars import TempVars\n"
+             "n = ['abc', 'qrs']\n"
+             "before_n_len = len(n) == 2\n"
+             "t_var = 6\n"
+             "with TempVars(names=n, starts=['t_']) as tv:\n"
+             "    inside_n_len = len(n) == 2\n"
+             "outside_n_len = len(n) == 2\n"
+             , self.d)
+
+        for _ in ['before_n_len', 'inside_n_len', 'outside_n_len']:
+            self.locals_subTest(_, self.d, True)
+
 
 class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
