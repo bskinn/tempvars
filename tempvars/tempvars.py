@@ -96,19 +96,26 @@ class TempVars(object):
                            default=attr.Factory(list))
 
     def __enter__(self):
-        # Save the initial list of tempvars passed
-        for _ in self.names:
-            self.passed_names.append(_)
+        # Save the passed names as a copy, to avoid injection into
+        # a list variable passed as the argument
+        self.names = self.names[:]
+
+        # Save the initial list of tempvars passed for later reference
+        self.passed_names = self.names[:]
 
         # Search the namespace for anything matching the .starts or
-        # .ends patterns
-        for k in self.ns.keys():
-            if self.starts is not None:
+        # .ends patterns. Shallow copy the lists to avoid insertions
+        # into an external passed list.
+        if self.starts is not None:
+            self.starts = self.starts[:]
+            for k in self.ns.keys():
                 for sw in self.starts:
                     if k.startswith(sw):
                         self.names.append(k)
 
-            if self.ends is not None:
+        if self.ends is not None:
+            self.ends = self.ends[:]
+            for k in self.ns.keys():
                 for ew in self.ends:
                     if k.endswith(ew):
                         self.names.append(k)
@@ -119,7 +126,7 @@ class TempVars(object):
             if k in self.ns:
                 self.stored_nsvars.update({k: self.ns.pop(k)})
 
-        # Return instance so that users can inspect it if needed
+        # Return instance so that users can inspect it if desired
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
