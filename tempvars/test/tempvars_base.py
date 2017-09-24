@@ -525,6 +525,30 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
 
+    def test_Good_NoNamesDupes_StartsEndsBothMatch(self):
+        pass
+
+
+    def test_Good_NoNamesDupes_StartsMultiMatch(self):
+        pass
+
+
+    def test_Good_NoNamesDupes_EndsMultiMatch(self):
+        pass
+
+
+    def test_Good_NoNamesDupes_NamesStartsBothMatch(self):
+        pass
+
+
+    def test_Good_NoNamesDupes_NamesEndsBothMatch(self):
+        pass
+
+
+    def test_Good_NoNamesDupes_NamesStartsEndsAllMatch(self):
+        pass
+
+
 class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
