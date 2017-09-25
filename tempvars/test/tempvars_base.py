@@ -525,50 +525,84 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
 
-    def test_Good_NoNamesDupes_StartsEndsBothMatch(self):
-
+    def runtest_Good_NoNamesDupes(self, code):
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
-        exec("from tempvars import TempVars\n"
-             "t_y = 15\n"
-             "with TempVars(starts=['t_'], ends=['_y']) as tv:\n"
-             "    should_be_len_one = len(tv.names) == 1\n"
-             , self.d)
+        exec(code, self.d)
 
-        for _ in ['should_be_len_one']:
-            self.locals_subTest(_, self.d, True)
+        self.locals_subTest('should_be_len_one', self.d, True)
+
+
+
+    def test_Good_NoNamesDupes_NamesDuplicatesPassed(self):
+
+        self.runtest_Good_NoNamesDupes(
+            "from tempvars import TempVars\n"
+            "t_y = 15\n"
+            "with TempVars(names=['t_y', 't_y']) as tv:\n"
+            "    should_be_len_one = len(tv.names) == 1\n"
+            )
 
 
     def test_Good_NoNamesDupes_StartsMultiMatch(self):
 
-        # Ensure self.d is actually getting cleared/reset
-        assert len(self.d) == 0
-
-        exec("from tempvars import TempVars\n"
-             "t_y_f = 15\n"
-             "with TempVars(starts=['t_', 't_y']) as tv:\n"
-             "    should_be_len_one = len(tv.names) == 1\n"
-             , self.d)
-
-        for _ in ['should_be_len_one']:
-            self.locals_subTest(_, self.d, True)
+        self.runtest_Good_NoNamesDupes(
+            "from tempvars import TempVars\n"
+            "t_y_f = 15\n"
+            "with TempVars(starts=['t_', 't_y']) as tv:\n"
+            "    should_be_len_one = len(tv.names) == 1\n"
+            )
 
 
     def test_Good_NoNamesDupes_EndsMultiMatch(self):
-        pass
+
+        self.runtest_Good_NoNamesDupes(
+            "from tempvars import TempVars\n"
+            "t_y_f = 15\n"
+            "with TempVars(ends=['_f', 'y_f']) as tv:\n"
+            "    should_be_len_one = len(tv.names) == 1\n"
+            )
+
+
+    def test_Good_NoNamesDupes_StartsEndsBothMatch(self):
+
+        self.runtest_Good_NoNamesDupes(
+            "from tempvars import TempVars\n"
+            "t_y = 15\n"
+            "with TempVars(starts=['t_'], ends=['_y']) as tv:\n"
+            "    should_be_len_one = len(tv.names) == 1\n"
+            )
 
 
     def test_Good_NoNamesDupes_NamesStartsBothMatch(self):
-        pass
+
+        self.runtest_Good_NoNamesDupes(
+            "from tempvars import TempVars\n"
+            "t_y = 15\n"
+            "with TempVars(names=['t_y'], starts=['t_']) as tv:\n"
+            "    should_be_len_one = len(tv.names) == 1\n"
+            )
 
 
     def test_Good_NoNamesDupes_NamesEndsBothMatch(self):
-        pass
+
+        self.runtest_Good_NoNamesDupes(
+            "from tempvars import TempVars\n"
+            "t_y = 15\n"
+            "with TempVars(names=['t_y'], ends=['_y']) as tv:\n"
+            "    should_be_len_one = len(tv.names) == 1\n"
+            )
 
 
     def test_Good_NoNamesDupes_NamesStartsEndsAllMatch(self):
-        pass
+
+        self.runtest_Good_NoNamesDupes(
+            "from tempvars import TempVars\n"
+            "t_y_f = 15\n"
+            "with TempVars(names=['t_y_f'], starts=['t_'], ends=['_f']) as tv:\n"
+            "    should_be_len_one = len(tv.names) == 1\n"
+            )
 
 
 class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
