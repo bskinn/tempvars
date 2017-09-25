@@ -526,11 +526,33 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
 
     def test_Good_NoNamesDupes_StartsEndsBothMatch(self):
-        pass
+
+        # Ensure self.d is actually getting cleared/reset
+        assert len(self.d) == 0
+
+        exec("from tempvars import TempVars\n"
+             "t_y = 15\n"
+             "with TempVars(starts=['t_'], ends=['_y']) as tv:\n"
+             "    should_be_len_one = len(tv.names) == 1\n"
+             , self.d)
+
+        for _ in ['should_be_len_one']:
+            self.locals_subTest(_, self.d, True)
 
 
     def test_Good_NoNamesDupes_StartsMultiMatch(self):
-        pass
+
+        # Ensure self.d is actually getting cleared/reset
+        assert len(self.d) == 0
+
+        exec("from tempvars import TempVars\n"
+             "t_y_f = 15\n"
+             "with TempVars(starts=['t_', 't_y']) as tv:\n"
+             "    should_be_len_one = len(tv.names) == 1\n"
+             , self.d)
+
+        for _ in ['should_be_len_one']:
+            self.locals_subTest(_, self.d, True)
 
 
     def test_Good_NoNamesDupes_EndsMultiMatch(self):
