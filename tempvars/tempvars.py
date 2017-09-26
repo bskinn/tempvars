@@ -97,28 +97,33 @@ class TempVars(object):
     passed_names = attr.ib(init=False, repr=True,
                            default=attr.Factory(list))
 
-    def _pop_to(self, dest_dict, patterns, test_fxn):
-        """Pop namespace members to a storage dict.
+    def _pop_to(self, dest_dict, patterns, test_fxn, *, append=True):
+        """Pop matching namespace members to a storage dict.
 
-        Namespace variables are popped over if `test_fxn` is truthy
-        when called with the variable name as the first argument and
-        any member of `patterns` as the second argument.
+        Namespace variables are popped over to `dest_dict` if
+        `test_fxn` is truthy when called with the variable
+        name as the first argument and any member of `patterns`
+        as the second argument. The names of any popped variables
+        not already present in `self.names` are appended there, if
+        indicated.
 
         """
         for _ in list(self.ns.keys()):
             # Pop the variable over to the destination dictionary if
             # any ``map`` result is truthy. Also append to `self.names`
             # to keep an explicit record of what was popped.
-            if any(map(lambda p, k=_, t=test_fxn: t(k, p), patterns)):
+            if any(map(lambda p, k=_, t=test_fxn: t(k, p),
+                       patterns)):
                 dest_dict.update({_: self.ns.pop(_)})
-                if _ not in self.names:
+                if append and _ not in self.names:
                     self.names.append(_)
 
     def __enter__(self):
         """Context manager entry function.
 
-        Removes any variables indicated by the criteria provided in
-        `names`/`starts`/`ends` and stores them in `self.stored_nsvars`
+        Removes from the namespace any variables indicated by the
+        criteria provided in `names`/`starts`/`ends` and stores
+        them in `self.stored_nsvars` for later reference.
 
         """
         # Save the passed names as a copy, to avoid injection into
@@ -145,29 +150,30 @@ class TempVars(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        # Pop any existing temp variables from the ns and into
-        # the storage dict
-        for k in self.names:
-            if k in self.ns:
-                self.retained_tempvars.update({k: self.ns.pop(k)})
+        """Context manager exit function.
 
-        # Check for any new variables that match `starts` and/or
-        # `ends` and pop them into the storage dict as well
-        vars_to_pop = []
-        for k in self.ns.keys():
-            if self.starts is not None:
-                for sw in self.starts:
-                    if k.startswith(sw):
-                        vars_to_pop.append(k)
+        Removes from the namespace any variables matching the criteria
+        provided in `names`/`starts`/`ends` and stores them in
+        `self.retained_tempvars` for later reference.
 
-            if self.ends is not None:
-                for ew in self.ends:
-                    if k.endswith(ew):
-                        vars_to_pop.append(k)
+        No use is made of any exception information passed in. Calling
+        context must handle all errors.
 
-        for k in vars_to_pop:
-            if k not in self.retained_tempvars.keys():
-                self.retained_tempvars.update({k: self.ns.pop(k)})
+        """
+        # Pop variables if they match exactly anything in `passed_names`
+        if self.names is not None:
+            self._pop_to(self.retained_tempvars, self.passed_names,
+                         str.__eq__, append=False)
+
+        # Pop variables if they match any starts-with pattern
+        if self.starts is not None:
+            self._pop_to(self.retained_tempvars, self.starts, str.startswith,
+                         append=False)
+
+        # Pop variables if they match any ends-with pattern
+        if self.ends is not None:
+            self._pop_to(self.retained_tempvars, self.ends, str.endswith,
+                         append=False)
 
         # If restore is set, then repopulate the namespace with
         # the pre-existing values.  Otherwise, do nothing.
