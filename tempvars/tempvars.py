@@ -13,12 +13,14 @@
 #
 # ------------------------------------------------------------------------------
 
+"""Core module defining the TempVars class."""
 
 import attr
 
 
 @attr.s()
 class TempVars(object):
+    """Context manager for handling temporary variables at the global scope."""
 
     # ## Arguments indicating variables to treat as temporary vars
     names = attr.ib(default=attr.Factory(list))
@@ -28,7 +30,7 @@ class TempVars(object):
     @names.validator
     @starts.validator
     @ends.validator
-    def _must_be_None_or_iterable_of_string(self, at, val):
+    def _var_pattern_validator(self, at, val):
         # Standard error for failure return
         te = TypeError("'{0}' must be a list of str".format(at.name))
 

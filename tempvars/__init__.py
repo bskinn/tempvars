@@ -13,13 +13,10 @@
 #
 # ------------------------------------------------------------------------------
 
-"""
-
-Base of ``tempvars`` package
+"""Base of ``tempvars`` package.
 
 .. autoclass:: TempVars
     :members:
-
 
 """
 
