@@ -531,7 +531,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
         exec(code, self.d)
 
-        self.locals_subTest('should_be_len_one', self.d, True)
+        self.locals_subTest('names_len_one', self.d, True)
 
 
 
@@ -541,7 +541,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y = 15\n"
             "with TempVars(names=['t_y', 't_y']) as tv:\n"
-            "    should_be_len_one = len(tv.names) == 1\n"
+            "    names_len_one = len(tv.names) == 1\n"
             )
 
 
@@ -551,7 +551,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y_f = 15\n"
             "with TempVars(starts=['t_', 't_y']) as tv:\n"
-            "    should_be_len_one = len(tv.names) == 1\n"
+            "    names_len_one = len(tv.names) == 1\n"
             )
 
 
@@ -561,7 +561,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y_f = 15\n"
             "with TempVars(ends=['_f', 'y_f']) as tv:\n"
-            "    should_be_len_one = len(tv.names) == 1\n"
+            "    names_len_one = len(tv.names) == 1\n"
             )
 
 
@@ -571,7 +571,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y = 15\n"
             "with TempVars(starts=['t_'], ends=['_y']) as tv:\n"
-            "    should_be_len_one = len(tv.names) == 1\n"
+            "    names_len_one = len(tv.names) == 1\n"
             )
 
 
@@ -581,7 +581,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y = 15\n"
             "with TempVars(names=['t_y'], starts=['t_']) as tv:\n"
-            "    should_be_len_one = len(tv.names) == 1\n"
+            "    names_len_one = len(tv.names) == 1\n"
             )
 
 
@@ -591,7 +591,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y = 15\n"
             "with TempVars(names=['t_y'], ends=['_y']) as tv:\n"
-            "    should_be_len_one = len(tv.names) == 1\n"
+            "    names_len_one = len(tv.names) == 1\n"
             )
 
 
@@ -601,7 +601,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y_f = 15\n"
             "with TempVars(names=['t_y_f'], starts=['t_'], ends=['_f']) as tv:\n"
-            "    should_be_len_one = len(tv.names) == 1\n"
+            "    names_len_one = len(tv.names) == 1\n"
             )
 
 

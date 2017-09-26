@@ -95,36 +95,49 @@ class TempVars(object):
     passed_names = attr.ib(init=False, repr=True,
                            default=attr.Factory(list))
 
+    def _pop_to(self, dest_dict, patterns, test_fxn):
+        """Pop namespace members to a storage dict.
+
+        Namespace variables are popped over if `test_fxn` is truthy
+        when called with the variable name as the first argument and
+        any member of `patterns` as the second argument.
+
+        """
+        for _ in list(self.ns.keys()):
+            # Pop the variable over to the destination dictionary if
+            # any ``map`` result is truthy. Also append to `self.names`
+            # to keep an explicit record of what was popped.
+            if any(map(lambda p, k=_, t=test_fxn: t(k, p), patterns)):
+                dest_dict.update({_: self.ns.pop(_)})
+                if _ not in self.names:
+                    self.names.append(_)
+
     def __enter__(self):
+        """Context manager entry function.
+
+        Removes any variables indicated by the criteria provided in
+        `names`/`starts`/`ends` and stores them in `self.stored_nsvars`
+
+        """
         # Save the passed names as a copy, to avoid injection into
-        # a list variable passed as the argument
-        self.names = self.names[:]
+        # a list variable passed as the argument. Do this via a set
+        # pass-through to cull any duplicate entries.
+        self.names = list(set(self.names))
 
         # Save the initial list of tempvars passed for later reference
         self.passed_names = self.names[:]
 
-        # Search the namespace for anything matching the .starts or
-        # .ends patterns. Shallow copy the lists to avoid insertions
-        # into an external passed list.
+        # Pop variables if they match exactly anything in `names`
+        if self.names is not None:
+            self._pop_to(self.stored_nsvars, self.names, str.__eq__)
+
+        # Pop variables if they match any starts-with pattern
         if self.starts is not None:
-            self.starts = self.starts[:]
-            for k in self.ns.keys():
-                for sw in self.starts:
-                    if k.startswith(sw):
-                        self.names.append(k)
+            self._pop_to(self.stored_nsvars, self.starts, str.startswith)
 
+        # Pop variables if they match any ends-with pattern
         if self.ends is not None:
-            self.ends = self.ends[:]
-            for k in self.ns.keys():
-                for ew in self.ends:
-                    if k.endswith(ew):
-                        self.names.append(k)
-
-        # Now that all of the variable names have been identified,
-        # pop any values that exist from the namespace and store
-        for k in self.names:
-            if k in self.ns:
-                self.stored_nsvars.update({k: self.ns.pop(k)})
+            self._pop_to(self.stored_nsvars, self.ends, str.endswith)
 
         # Return instance so that users can inspect it if desired
         return self
