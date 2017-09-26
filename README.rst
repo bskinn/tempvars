@@ -8,7 +8,9 @@ A frustrating aspect of working with Jupyter notebooks
 is debugging a worksheet for half an hour
 and discovering a carried-over variable name was hanging around
 in the notebook namespace and causing
-the misbehavior. The ``TempVars`` context manager clears selected
+the misbehavior, or opening a notebook that "worked fine" the last
+time it was used because of random variables lingering in the
+namespace. The ``TempVars`` context manager clears selected
 identifiers from the namespace for the duration of the ``with``
 suite, then restores them afterwards (or not, if desired). Further, any
 variables created within the managed context

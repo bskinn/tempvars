@@ -13,9 +13,10 @@
 #
 # ------------------------------------------------------------------------------
 
+"""Base submodule for the tempvars test suite."""
+
 from __future__ import absolute_import
 
-__all__ = ['tempvars_base']
+__all__ = ['suite_expect_good', 'suite_expect_fail']
 
-from . import *
-
+from .tempvars_base import suite_expect_good, suite_expect_fail
