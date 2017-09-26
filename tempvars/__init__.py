@@ -22,6 +22,8 @@
 
 from __future__ import absolute_import
 
+__all__ = ['TempVars']
+
 from .tempvars import TempVars
 
 __version__ = '1.0b1'
