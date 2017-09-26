@@ -531,7 +531,8 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
         exec(code, self.d)
 
-        self.locals_subTest('names_len_one', self.d, True)
+        for _ in ['names_len_one', 'nsvars_len_one', 'ret_tempvars_len_one']:
+            self.locals_subTest(_, self.d, True)
 
 
 
@@ -542,6 +543,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "t_y = 15\n"
             "with TempVars(names=['t_y', 't_y']) as tv:\n"
             "    names_len_one = len(tv.names) == 1\n"
+            "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
+            "    t_y = 35\n"
+            "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
             )
 
 
@@ -552,6 +556,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "t_y_f = 15\n"
             "with TempVars(starts=['t_', 't_y']) as tv:\n"
             "    names_len_one = len(tv.names) == 1\n"
+            "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
+            "    t_y_f = 35\n"
+            "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
             )
 
 
@@ -562,6 +569,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "t_y_f = 15\n"
             "with TempVars(ends=['_f', 'y_f']) as tv:\n"
             "    names_len_one = len(tv.names) == 1\n"
+            "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
+            "    t_y_f = 35\n"
+            "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
             )
 
 
@@ -572,6 +582,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "t_y = 15\n"
             "with TempVars(starts=['t_'], ends=['_y']) as tv:\n"
             "    names_len_one = len(tv.names) == 1\n"
+            "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
+            "    t_y = 35\n"
+            "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
             )
 
 
@@ -582,6 +595,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "t_y = 15\n"
             "with TempVars(names=['t_y'], starts=['t_']) as tv:\n"
             "    names_len_one = len(tv.names) == 1\n"
+            "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
+            "    t_y = 35\n"
+            "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
             )
 
 
@@ -592,6 +608,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "t_y = 15\n"
             "with TempVars(names=['t_y'], ends=['_y']) as tv:\n"
             "    names_len_one = len(tv.names) == 1\n"
+            "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
+            "    t_y = 35\n"
+            "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
             )
 
 
@@ -602,6 +621,9 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "t_y_f = 15\n"
             "with TempVars(names=['t_y_f'], starts=['t_'], ends=['_f']) as tv:\n"
             "    names_len_one = len(tv.names) == 1\n"
+            "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
+            "    t_y_f = 35\n"
+            "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
             )
 
 
