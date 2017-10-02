@@ -8,12 +8,15 @@ A frustrating aspect of working with Jupyter notebooks
 is debugging a worksheet for half an hour
 and discovering a carried-over variable name was hanging around
 in the notebook namespace and causing
-the misbehavior. The ``TempVars`` context manager clears selected
-identifiers from the namespace for the duration of the ``with``
-suite, then restores them afterwards (or not, if desired). Further, any
-variables created within the managed context
+the misbehavior, or opening a notebook that "worked fine" the last
+time it was used because of random variables lingering in the
+namespace. The ``TempVars`` context manager avoids these pitfalls by
+clearing selected identifiers from the namespace for the duration of
+the ``with`` suite, then restoring them afterwards (or not, if desired).
+Further, any variables created within the managed context
 that match the criteria passed to ``TempVars`` are removed from
-the namespace upon exiting. For convenience, all variables
+the namespace upon exiting, ensuring these values do not spuriously
+contribute to following code. For convenience, all variables
 that were removed from the namespace at both entry and exit
 are stored with their values for later reference (see example code below).
 
@@ -83,7 +86,7 @@ Output::
 Administrative
 --------------
 
-Branches named with the prefix `v.` are volatile. The history there
+Branches named with the prefix ``v.`` are volatile. The history there
 may be rewritten dramatically, without warning.
 
 Available on PyPI: ``pip install tempvars``.

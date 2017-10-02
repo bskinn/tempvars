@@ -8,7 +8,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### [Unreleased]
 
-*Nothing yet*
+*...*
+
+
+### [1.0.0b2] - 2017-10-01
+
+#### Fixed
+
+ * `starts` and `ends` no longer allow patterns that respectively
+   start and end with `__`, to avoid munging the default dunder
+   objects in the namespace
+ * If a variable referencing a list, rather than a list literal, is
+   passed as `names`, that passed reference is no longer erroneously
+   updated with matches to the `starts` and `ends` patterns.
+ * Fixed an erroneous duplication of variable names held in
+   `names` due to variables in the namespace, e.g., matching multiple
+   pattern entries in `starts` and/or `ends`.
 
 
 ### [1.0.0b1] - 2017-09-19
