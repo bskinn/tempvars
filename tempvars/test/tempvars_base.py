@@ -39,9 +39,8 @@ class SuperTestTempVars(object):
 class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
     """Testing code accuracy under good params & expected behavior."""
 
-    def test_Good_tempvarsPassed(self):
+    def test_Good_namesPassed(self):
         """Confirm names passed to `names` get masked."""
-
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -55,8 +54,8 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         for _ in ['inside_absent', 'outside_present']:
             self.locals_subTest(_, self.d, True)
 
-    def test_Good_tempvarsPassed_NoRestore(self):
-
+    def test_Good_namesPassed_NoRestore(self):
+        """Confirm vars passed to `names` w/Restore=False aren't restored."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -70,8 +69,12 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         for _ in ['inside_absent', 'outside_absent']:
             self.locals_subTest(_, self.d, True)
 
-    def test_Good_tempvarsPassedButNotPresent(self):
+    def test_Good_namesPassedButNotPresent(self):
+        """Confirm vars not matching `names` aren't masked.
 
+        Also checks that matching vars created in the context are
+        properly scrubbed.
+        """
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -92,7 +95,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_startsPassed(self):
-
+        """Confirm vars starting with `starts` are masked."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -115,7 +118,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_endsPassed(self):
-
+        """Confirm vars ending with `ends` are masked."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -138,7 +141,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_startsPassed_NoRestore(self):
-
+        """Confirm vars matching `starts` aren't restored w/restore=False."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -161,7 +164,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_endsPassed_NoRestore(self):
-
+        """Confirm vars matching `ends` aren't restored w/restore=False."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -183,8 +186,12 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
                   'outside_t_y_present', 'outside_z_x_absent']:
             self.locals_subTest(_, self.d, True)
 
-    def test_Good_checkStorage_tempvarsNoRestore(self):
+    def test_Good_checkStorage_namesNoRestore(self):
+        """Confirm storage dictionaries populate correctly.
 
+        Specifically, checking `.stored_nsvars` and `.retained_tempvars`
+        when vars are passed to `names`.
+        """
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -197,7 +204,8 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "    x = 18\n"
              "    inside_final_exist = 'x' in dir()\n"
              "    inside_final_val = x == 18\n"
-             "    inside_retained_tempvars_empty = len(tv.retained_tempvars) == 0\n"
+             "    inside_retained_tempvars_empty = len(tv.retained_tempvars\n"
+             "                                         ) == 0\n"
              "outside_stored_nsvar = tv.stored_nsvars.get('x') == 5\n"
              "outside_retained_tempvar = tv.retained_tempvars.get('x') == 18\n"
              "outside_final_absent = 'x' not in dir()\n",
@@ -211,7 +219,11 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_checkStorage_startsNoRestore(self):
+        """Confirm storage dictionaries populate correctly.
 
+        Specifically, checking `.stored_nsvars` and `.retained_tempvars`
+        when patterns are passed to `starts`.
+        """
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -247,7 +259,11 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_checkStorage_endsNoRestore(self):
+        """Confirm storage dictionaries populate correctly.
 
+        Specifically, checking `.stored_nsvars` and `.retained_tempvars`
+        when patterns are passed to `ends`.
+        """
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -283,7 +299,11 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_checkArgs(self):
+        """Confirm that no collisions occur when all arguments used.
 
+        Probing to ensure no cross-talk if all of `names`, `starts`, and
+        `ends` are passed arguments.
+        """
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -597,7 +617,8 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         self.runtest_Good_NoNamesDupes(
             "from tempvars import TempVars\n"
             "t_y_f = 15\n"
-            "with TempVars(names=['t_y_f'], starts=['t_'], ends=['_f']) as tv:\n"
+            "with TempVars(names=['t_y_f'], starts=['t_'],\n"
+            "              ends=['_f']) as tv:\n"
             "    names_len_one = len(tv.names) == 1\n"
             "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
             "    t_y_f = 35\n"
@@ -608,10 +629,10 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
     """Testing that code raises expected errors when invoked improperly."""
 
-    list_args = ['tempvars', 'starts', 'ends']
+    list_args = ['names', 'starts', 'ends']
 
     def test_Fail_ArgIsNotListOrNone(self):
-
+        """Confirm `TypeError` if non-list passed to var arg."""
         code = 'from tempvars import TempVars; TempVars({0}=1)'
 
         for arg in self.list_args:
@@ -619,7 +640,7 @@ class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
                 self.assertRaises(TypeError, exec, code.format(arg), {})
 
     def test_Fail_ArgListHasNonString(self):
-
+        """Confirm `TypeError` if non-string passed in a var arg list."""
         code = 'from tempvars import TempVars; TempVars({0}=["abcde", 1])'
 
         for arg in self.list_args:
@@ -627,36 +648,42 @@ class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
                 self.assertRaises(TypeError, exec, code.format(arg), {})
 
     def test_Fail_UnderArgs(self):
-
-        code = 'from tempvars import TempVars; TempVars({0}=["abc", "{1}", "pqr"])'
+        """Confirm `ValueError` on (d)under `starts`/`ends` patterns."""
+        code = ('from tempvars import TempVars; '
+                'TempVars({0}=["abc", "{1}", "pqr"])')
 
         for arg in ['starts', 'ends']:
             for val in ['_', '__']:
                 with self.subTest('{0}-{1}'.format(arg, val)):
-                    self.assertRaises(ValueError, exec, code.format(arg, val), {})
+                    self.assertRaises(ValueError, exec,
+                                      code.format(arg, val), {})
 
         with self.subTest('starts-any-dunder-start'):
-            self.assertRaises(ValueError, exec, code.format('starts', '__d'), {})
+            self.assertRaises(ValueError, exec,
+                              code.format('starts', '__d'), {})
 
         with self.subTest('ends-any-dunder-end'):
-            self.assertRaises(ValueError, exec, code.format('ends', 's__'), {})
+            self.assertRaises(ValueError, exec,
+                              code.format('ends', 's__'), {})
 
     def test_Fail_NonBooleanRestore(self):
-
-        code = 'from tempvars import TempVars; TempVars(names=["abc"], restore=1)'
+        """Confirm `TypeError` if non-boolean `restore` is passed."""
+        code = ('from tempvars import TempVars; '
+                'TempVars(names=["abc"], restore=1)')
 
         self.assertRaises(TypeError, exec, code, {})
 
     def test_Fail_NonGlobalScope(self):
-
+        """Confirm that a `RuntimeError` is raised in a non-global scope."""
         from tempvars import TempVars
 
         with self.assertRaises(RuntimeError):
-            with TempVars(names=['abcd']) as tv:
+            with TempVars(names=['abcd']):
                 pass    # pragma: no cover
 
 
 def suite_expect_good():
+    """Create and return the test suite for expect-good cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
     s.addTests([tl.loadTestsFromTestCase(TestTempVarsExpectGood)])
@@ -665,6 +692,7 @@ def suite_expect_good():
 
 
 def suite_expect_fail():
+    """Create and return the test suite for expect-fail cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
     s.addTests([tl.loadTestsFromTestCase(TestTempVarsExpectFail)])
