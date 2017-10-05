@@ -235,26 +235,32 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "    inside_initial_absent = 't_x' not in dir()\n"
              "    inside_initial_newvar_absent = 't_y' not in dir()\n"
              "    inside_stored_nsvar = tv.stored_nsvars.get('t_x') == 5\n"
-             "    inside_newvar_not_in_nsvars = 't_y' not in tv.stored_nsvars\n"
+             "    inside_newvar_notin_nsvars = 't_y' not in tv.stored_nsvars\n"
              "    t_x = 18\n"
              "    t_y = 43\n"
              "    inside_final_exist = 't_x' in dir()\n"
              "    inside_final_val = t_x == 18\n"
-             "    inside_retained_tempvars_empty = len(tv.retained_tempvars) == 0\n"
+             "    inside_retained_tempvars_empty = len(tv.retained_tempvars\n"
+             "                                         ) == 0\n"
              "outside_stored_nsvar = tv.stored_nsvars.get('t_x') == 5\n"
              "outside_newvar_absent = 't_y' not in dir()\n"
-             "outside_newvar_not_in_nsvars = 't_y' not in tv.stored_nsvars\n"
-             "outside_retained_tempvar = tv.retained_tempvars.get('t_x') == 18\n"
-             "outside_newvar_in_retained_tempvars = 't_y' in tv.retained_tempvars\n"
+             "outside_newvar_notin_nsvars = 't_y' not in tv.stored_nsvars\n"
+             "outside_retained_tempvar = tv.retained_tempvars.get('t_x'\n"
+             "                                                    ) == 18\n"
+             "outside_newvar_in_retained_tempvars =\\\n"
+             "                           't_y' in tv.retained_tempvars\n"
              "outside_final_absent = 't_x' not in dir()\n",
              self.d)
 
-        for _ in ['before_var_present', 'before_newvar_absent', 'inside_initial_absent',
+        for _ in ['before_var_present', 'before_newvar_absent',
+                  'inside_initial_absent',
                   'inside_initial_newvar_absent',
-                  'inside_stored_nsvar', 'inside_newvar_not_in_nsvars', 'inside_final_exist',
+                  'inside_stored_nsvar', 'inside_newvar_notin_nsvars',
+                  'inside_final_exist',
                   'inside_final_val', 'inside_retained_tempvars_empty',
                   'outside_stored_nsvar', 'outside_newvar_absent',
-                  'outside_newvar_not_in_nsvars', 'outside_newvar_in_retained_tempvars',
+                  'outside_newvar_notin_nsvars',
+                  'outside_newvar_in_retained_tempvars',
                   'outside_retained_tempvar', 'outside_final_absent']:
             self.locals_subTest(_, self.d, True)
 
@@ -275,26 +281,33 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "    inside_initial_absent = 't_x' not in dir()\n"
              "    inside_initial_newvar_absent = 'r_x' not in dir()\n"
              "    inside_stored_nsvar = tv.stored_nsvars.get('t_x') is 5\n"
-             "    inside_newvar_not_in_nsvars = 'r_x' not in tv.stored_nsvars\n"
+             "    inside_newvar_not_in_nsvars =\\\n"
+             "                         'r_x' not in tv.stored_nsvars\n"
              "    t_x = 18\n"
              "    r_x = 43\n"
              "    inside_final_exist = 't_x' in dir()\n"
              "    inside_final_val = t_x == 18\n"
-             "    inside_retained_tempvars_empty = len(tv.retained_tempvars) == 0\n"
+             "    inside_retained_tempvars_empty =\\\n"
+             "                    len(tv.retained_tempvars) == 0\n"
              "outside_stored_nsvar = tv.stored_nsvars.get('t_x') == 5\n"
              "outside_newvar_absent = 'r_x' not in dir()\n"
              "outside_newvar_not_in_nsvars = 'r_x' not in tv.stored_nsvars\n"
-             "outside_retained_tempvar = tv.retained_tempvars.get('t_x') == 18\n"
-             "outside_newvar_in_retained_tempvars = 'r_x' in tv.retained_tempvars\n"
+             "outside_retained_tempvar =\\\n"
+             "                    tv.retained_tempvars.get('t_x') == 18\n"
+             "outside_newvar_in_retained_tempvars =\\\n"
+             "                    'r_x' in tv.retained_tempvars\n"
              "outside_final_absent = 't_x' not in dir()\n",
              self.d)
 
-        for _ in ['before_val', 'before_newvar_absent', 'inside_initial_absent',
-                  'inside_initial_newvar_absent', 'inside_newvar_not_in_nsvars',
+        for _ in ['before_val', 'before_newvar_absent',
+                  'inside_initial_absent',
+                  'inside_initial_newvar_absent',
+                  'inside_newvar_not_in_nsvars',
                   'inside_stored_nsvar', 'inside_final_exist',
                   'inside_final_val', 'inside_retained_tempvars_empty',
                   'outside_stored_nsvar', 'outside_newvar_absent',
-                  'outside_newvar_not_in_nsvars', 'outside_newvar_in_retained_tempvars',
+                  'outside_newvar_not_in_nsvars',
+                  'outside_newvar_in_retained_tempvars',
                   'outside_retained_tempvar', 'outside_final_absent']:
             self.locals_subTest(_, self.d, True)
 
@@ -314,7 +327,8 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "f_z = 59\n"
              "d_z = 12\n"
              "g_r = 43\n"
-             "with TempVars(names=['g_r'], starts=['t_'], ends=['_z']) as tv:\n"
+             "with TempVars(names=['g_r'], starts=['t_'],\n"
+             "              ends=['_z']) as tv:\n"
              "    g_r_absent = 'g_r' not in dir()\n"
              "    _t_x_absent = 't_x' not in dir()\n"
              "    _t_y_absent = 't_y' not in dir()\n"
@@ -344,8 +358,8 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
                   'f_z_not_in_passed_names', 'd_z_not_in_passed_names']:
             self.locals_subTest(_, self.d, True)
 
-    def test_Good_tempvarsMultiPassed(self):
-
+    def test_Good_namesMultiPassed(self):
+        """Confirm proper function with multiple `names`."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -377,7 +391,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_startsMultiPassed(self):
-
+        """Confirm ok w/multiple `starts` patterns."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -409,7 +423,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_endsMultiPassed(self):
-
+        """Confirm ok w/multiple `ends` patterns."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -441,7 +455,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_nestedVarsRestoreOuterOnly(self):
-
+        """Confirm outer-restore nested contexts restore correctly."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -465,10 +479,13 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "after_12_z_present = 'z' in dir()\n",
              self.d)
 
-        for _ in ['in_1_before_2_x_absent', 'in_1_before_2_y_present', 'in_1_before_2_z_present',
+        for _ in ['in_1_before_2_x_absent', 'in_1_before_2_y_present',
+                  'in_1_before_2_z_present',
                   'in_12_x_absent', 'in_12_y_absent', 'in_12_z_present',
-                  'in_1_after_2_x_absent', 'in_1_after_2_y_absent', 'in_1_after_2_z_present',
-                  'after_12_x_present', 'after_12_y_absent', 'after_12_z_present']:
+                  'in_1_after_2_x_absent', 'in_1_after_2_y_absent',
+                  'in_1_after_2_z_present',
+                  'after_12_x_present', 'after_12_y_absent',
+                  'after_12_z_present']:
             self.locals_subTest(_, self.d, True)
 
     def test_Good_nestedVarsRestoreInnerOnly(self):
