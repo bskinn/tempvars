@@ -7,4 +7,6 @@ python:
  - 3.6
 script:
  - python tests.py -a
+ - flake8 tempvars
+
 

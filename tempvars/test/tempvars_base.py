@@ -204,8 +204,8 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "    x = 18\n"
              "    inside_final_exist = 'x' in dir()\n"
              "    inside_final_val = x == 18\n"
-             "    inside_retained_tempvars_empty = len(tv.retained_tempvars\n"
-             "                                         ) == 0\n"
+             "    inside_retained_tempvars_empty =\\\n"
+             "                    len(tv.retained_tempvars) == 0\n"
              "outside_stored_nsvar = tv.stored_nsvars.get('x') == 5\n"
              "outside_retained_tempvar = tv.retained_tempvars.get('x') == 18\n"
              "outside_final_absent = 'x' not in dir()\n",
@@ -240,13 +240,13 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "    t_y = 43\n"
              "    inside_final_exist = 't_x' in dir()\n"
              "    inside_final_val = t_x == 18\n"
-             "    inside_retained_tempvars_empty = len(tv.retained_tempvars\n"
-             "                                         ) == 0\n"
+             "    inside_retained_tempvars_empty =\\\n"
+             "                        len(tv.retained_tempvars) == 0\n"
              "outside_stored_nsvar = tv.stored_nsvars.get('t_x') == 5\n"
              "outside_newvar_absent = 't_y' not in dir()\n"
              "outside_newvar_notin_nsvars = 't_y' not in tv.stored_nsvars\n"
-             "outside_retained_tempvar = tv.retained_tempvars.get('t_x'\n"
-             "                                                    ) == 18\n"
+             "outside_retained_tempvar =\\\n"
+             "                tv.retained_tempvars.get('t_x'\n) == 18\n"
              "outside_newvar_in_retained_tempvars =\\\n"
              "                           't_y' in tv.retained_tempvars\n"
              "outside_final_absent = 't_x' not in dir()\n",
@@ -489,7 +489,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_nestedVarsRestoreInnerOnly(self):
-
+        """Confirm inner-restore nested contexts restore correctly."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -513,14 +513,17 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "after_12_z_present = 'z' in dir()\n",
              self.d)
 
-        for _ in ['in_1_before_2_x_absent', 'in_1_before_2_y_present', 'in_1_before_2_z_present',
+        for _ in ['in_1_before_2_x_absent', 'in_1_before_2_y_present',
+                  'in_1_before_2_z_present',
                   'in_12_x_absent', 'in_12_y_absent', 'in_12_z_present',
-                  'in_1_after_2_x_absent', 'in_1_after_2_y_present', 'in_1_after_2_z_present',
-                  'after_12_x_absent', 'after_12_y_present', 'after_12_z_present']:
+                  'in_1_after_2_x_absent', 'in_1_after_2_y_present',
+                  'in_1_after_2_z_present',
+                  'after_12_x_absent', 'after_12_y_present',
+                  'after_12_z_present']:
             self.locals_subTest(_, self.d, True)
 
     def test_Good_NonMutableNamesStartsEndsArgs(self):
-
+        """Confirm external lists passed as args aren't being modified."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -549,6 +552,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def runtest_Good_NoNamesDupes(self, code):
+        """Perform subTest-ed name duplication check on indicated code."""
         # Ensure self.d is actually getting cleared/reset
         assert len(self.d) == 0
 
@@ -558,7 +562,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             self.locals_subTest(_, self.d, True)
 
     def test_Good_NoNamesDupes_NamesDuplicatesPassed(self):
-
+        """Confirm no duplicate vars stored if `names` holds dupes."""
         self.runtest_Good_NoNamesDupes(
             "from tempvars import TempVars\n"
             "t_y = 15\n"
@@ -570,7 +574,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             )
 
     def test_Good_NoNamesDupes_StartsMultiMatch(self):
-
+        """Confirm no dupe var names stored if `starts` matches repeatedly."""
         self.runtest_Good_NoNamesDupes(
             "from tempvars import TempVars\n"
             "t_y_f = 15\n"
@@ -582,7 +586,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             )
 
     def test_Good_NoNamesDupes_EndsMultiMatch(self):
-
+        """Confirm no dupe var names stored if `ends` matches repeatedly."""
         self.runtest_Good_NoNamesDupes(
             "from tempvars import TempVars\n"
             "t_y_f = 15\n"
@@ -594,7 +598,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             )
 
     def test_Good_NoNamesDupes_StartsEndsBothMatch(self):
-
+        """Confirm no dupe var names stored if `starts` & `ends` both match."""
         self.runtest_Good_NoNamesDupes(
             "from tempvars import TempVars\n"
             "t_y = 15\n"
@@ -606,7 +610,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             )
 
     def test_Good_NoNamesDupes_NamesStartsBothMatch(self):
-
+        """Confirm no dupe varnames stored if `starts` & `names` both match."""
         self.runtest_Good_NoNamesDupes(
             "from tempvars import TempVars\n"
             "t_y = 15\n"
@@ -618,7 +622,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             )
 
     def test_Good_NoNamesDupes_NamesEndsBothMatch(self):
-
+        """Confirm no dupe var names stored if `names` & `ends` both match."""
         self.runtest_Good_NoNamesDupes(
             "from tempvars import TempVars\n"
             "t_y = 15\n"
@@ -630,7 +634,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             )
 
     def test_Good_NoNamesDupes_NamesStartsEndsAllMatch(self):
-
+        """Confirm no dupe var names if `names`/`starts`/`ends` all match."""
         self.runtest_Good_NoNamesDupes(
             "from tempvars import TempVars\n"
             "t_y_f = 15\n"
