@@ -20,11 +20,60 @@ import attr
 
 @attr.s()
 class TempVars(object):
-    """Context manager for handling temporary variables at the global scope."""
+    """Context manager for handling temporary variables at the global scope.
+
+    **WILL NOT WORK PROPERLY unless used as a context manager!!**
+
+    **CAN ONLY BE USED at global scopes (Python/IPython REPL, Jupyter notebook,
+    etc.)**
+
+    Parameters
+    ----------
+    names :
+        |list| of |str| - Variables will be treated as temporary if their names
+        test equal to any of these items.
+
+    starts :
+        |list| of |str| - Variables will be treated as temporary if their names
+        *start* with any of these patterns (tested with
+        :meth:`.startswith(starts[i]) <str.startswith>`).
+
+    ends :
+        |list| of |str| - Variables will be treated as temporary if their names
+        *end* with any of these patterns (tested with
+        :meth:`.endswith(ends[i]) <str.endswith>`).
+
+    restore :
+        |bool| - If |True|, any variables hidden from the namespace upon entry
+        into the |with| suite are restored to the namespace upon exit. If
+        |False|, no variables are restored.
+
+
+    The ``TempVars`` instance can be bound in the |with| statement for access
+    to stored variables, etc.::
+
+        >>> with TempVars(names=['abcd']) as tv:
+        ...     pass
+
+    See the :doc:`usage examples <usage>` page for more information.
+
+
+    **Class Members**
+
+    These objects are accessible via the instance bound as part of the
+    |with| statement (``tv`` from the above example).
+
+    """
 
     # ## Arguments indicating variables to treat as temporary vars
+    #: Complete list of variables masked from the namespace upon entry
+    #: to the |with| block.
     names = attr.ib(default=attr.Factory(list))
+
+    #: List of :meth:`.startswith <str.startswith>` matching patterns.
     starts = attr.ib(default=None)
+
+    #: List of :meth:`.endswith <str.endswith>` matching patterns.
     ends = attr.ib(default=None)
 
     @names.validator

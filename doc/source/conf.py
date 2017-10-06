@@ -24,9 +24,12 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- General configuration ------------------------------------------------
 
+# For tempvars, want to keep the autodoc-ing in source order
+autodoc_member_order = 'bysource'
+
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-# needs_sphinx = '1.0'
+needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -196,6 +199,58 @@ epub_copyright = copyright
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
 
+# Universal substitutions &c for all source files.
+rst_epilog = """
+.. |extlink| image:: /_static/extlink.svg
+
+.. |None| replace:: :obj:`None`
+
+.. |True| replace:: :obj:`True`
+
+.. |False| replace:: :obj:`False`
+
+.. |int| replace:: :obj:`int`
+
+.. |float| replace:: :obj:`float`
+
+.. |list| replace:: :obj:`list`
+
+.. |tuple| replace:: :obj:`tuple`
+
+.. |type| replace:: :obj:`type`
+
+.. |str| replace:: :obj:`str`
+
+.. |unicode| replace:: :obj:`unicode`
+
+.. |bool| replace:: :obj:`bool`
+
+.. |dict| replace:: :obj:`dict`
+
+.. |callable| replace:: :func:`callable`
+
+.. |with| replace:: :ref:`with <python:with>`
+
+.. |re.compile| replace:: :func:`re.compile`
+
+.. |npfloat_| replace:: :mod:`np.float_ <numpy.doc.basics>`
+
+.. |npfloat| replace:: ``np.float``
+
+.. |nparray| replace:: :obj:`np.array <numpy.ndarray>`
+
+.. |br| raw:: html
+
+    <br />
+
+"""
+
+# Global setup code for all doctests
+doctest_global_setup = """
+
+from tempvars import TempVars
+
+"""
 
 
 # Example configuration for intersphinx: refer to the Python standard library.

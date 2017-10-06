@@ -1,14 +1,54 @@
-.. tempvars documentation master file, created by
-   sphinx-quickstart on Sun Sep 10 23:36:26 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. Root file for tempvars documentation
 
-Welcome to tempvars's documentation!
-====================================
+tempvars Documentation
+======================
+
+*Streamlined temporary variable management in Jupyter Notebook, IPython, etc.*
+
+[texty text mctexterson]
+
+Testing ``doctest``:
+
+.. testsetup testing
+
+..    from tempvars import TempVars
+
+.. doctest:: testing
+
+    >>> a = [1]
+    >>> print(a)
+    [1]
+    >>> with TempVars(names=['a']) as tv:
+    ...     print('a' in dir())
+    ...     a = 3
+    ...     print(a)
+    False
+    3
+    >>> print(a)
+    [1]
+    >>> a.append(2)
+    >>> print(a)
+    [1, 2]
+    >>> print(tv.stored_nsvars['a'])
+    [1, 2]
+    >>> with TempVars(starts=['t_']) as tv:
+    ...     t_z = [5]
+    ...     z = t_z
+    ...     print(t_z)
+    [5]
+    >>> z.append(6)
+    >>> print(z)
+    [5, 6]
+    >>> print(tv.retained_tempvars['t_z'])
+    [5, 6]
+
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
+    :caption: Contents:
+
+    Usage <usage>
+    API <api>
 
 
 
