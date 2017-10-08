@@ -58,9 +58,9 @@ class TempVars(object):
     # ## Namespace for temp variable management.
     # Always the globals at the level of the invoker of the TempVars
     # instance (set below in _ns_default).
-    ns = attr.ib(repr=False, init=False)
+    _ns = attr.ib(repr=False, init=False)
 
-    @ns.default
+    @_ns.default
     def _ns_default(self):
         import inspect
 
@@ -108,13 +108,13 @@ class TempVars(object):
         indicated.
 
         """
-        for _ in list(self.ns.keys()):
+        for _ in list(self._ns.keys()):
             # Pop the variable over to the destination dictionary if
             # any ``map`` result is truthy. Also append to `self.names`
             # to keep an explicit record of what was popped.
             if any(map(lambda p, k=_, t=test_fxn: t(k, p),
                        patterns)):
-                dest_dict.update({_: self.ns.pop(_)})
+                dest_dict.update({_: self._ns.pop(_)})
                 if append and _ not in self.names:
                     self.names.append(_)
 
@@ -178,7 +178,7 @@ class TempVars(object):
         # If restore is set, then repopulate the namespace with
         # the pre-existing values.  Otherwise, do nothing.
         if self.restore:
-            self.ns.update(self.stored_nsvars)
+            self._ns.update(self.stored_nsvars)
 
         # Containing code should handle any exception raised
         return False
