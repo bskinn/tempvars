@@ -54,6 +54,22 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
         for _ in ['inside_absent', 'outside_present']:
             self.locals_subTest(_, self.d, True)
 
+    def test_Good_namesPassed_ToggleWorks(self):
+        """Confirm in-suite toggle of `.restore` changes behavior."""
+        # Ensure self.d is actually getting cleared/reset
+        assert len(self.d) == 0
+
+        exec("from tempvars import TempVars\n"
+             "x = 5\n"
+             "with TempVars(names=['x']) as tv:\n"
+             "    inside_absent = 'x' not in dir()\n"
+             "    tv.restore = False\n"
+             "outside_absent = 'x' not in dir()\n",
+             self.d)
+
+        for _ in ['inside_absent', 'outside_absent']:
+            self.locals_subTest(_, self.d, True)
+
     def test_Good_namesPassed_NoRestore(self):
         """Confirm vars passed to `names` w/Restore=False aren't restored."""
         # Ensure self.d is actually getting cleared/reset

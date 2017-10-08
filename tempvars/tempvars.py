@@ -67,14 +67,16 @@ class TempVars(object):
     """
 
     # ## Arguments indicating variables to treat as temporary vars
-    #: Complete list of variables masked from the namespace upon entry
-    #: to the |with| block.
+    #: |list| containing the |str| names of all variables actually
+    #: masked from the namespace upon entry to the |with| block.
     names = attr.ib(default=attr.Factory(list))
 
-    #: List of :meth:`.startswith <str.startswith>` matching patterns.
+    #: |list| of |str| - All passed :meth:`.startswith <str.startswith>`
+    #: matching patterns.
     starts = attr.ib(default=None)
 
-    #: List of :meth:`.endswith <str.endswith>` matching patterns.
+    #: |list| of |str| - All passed :meth:`.endswith <str.endswith>`
+    #: matching patterns.
     ends = attr.ib(default=None)
 
     @names.validator
@@ -102,6 +104,8 @@ class TempVars(object):
                 raise ValueError("'ends' may not end with '__'")
 
     # ## Flag for whether to restore the prior namespace contents
+    #: |bool| flag indicating whether to restore the prior namespace
+    #: contents. **Can** be changed within the |with| suite.
     restore = attr.ib(default=True,
                       validator=attr.validators.instance_of(bool))
 
@@ -134,16 +138,19 @@ class TempVars(object):
         return inspect.currentframe().f_back.f_back.f_globals
 
     # ## Internal vars, not set via the attrs __init__
-    # Bucket for preserving variables temporarily removed from
-    # the namespace
+    #: |dict| container for preserving variables temporarily removed from
+    #: the namespace, along with their associated values.
     stored_nsvars = attr.ib(init=False, repr=False,
                             default=attr.Factory(dict))
 
-    # Bucket for retaining the temporary variables after the context is exited
+    #: |dict| container for storing the temporary variables removed from the
+    #: namespace after exiting the |with| block.
     retained_tempvars = attr.ib(init=False, repr=False,
                                 default=attr.Factory(dict))
 
-    # Bucket for documenting the initial vars passed to tempvars
+    #: |list| documenting the initial variables passed to
+    #: :data:`names <TempVars.names>` when instantiating
+    #: :class:`TempVars`.
     passed_names = attr.ib(init=False, repr=True,
                            default=attr.Factory(list))
 
