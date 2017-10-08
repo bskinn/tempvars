@@ -233,23 +233,21 @@ rst_epilog = """
 
 .. |re.compile| replace:: :func:`re.compile`
 
-.. |npfloat_| replace:: :mod:`np.float_ <numpy.doc.basics>`
-
-.. |npfloat| replace:: ``np.float``
-
-.. |nparray| replace:: :obj:`np.array <numpy.ndarray>`
-
 .. |br| raw:: html
 
     <br />
 
-.. |arg_names| replace:: :class:`names <tempvars.TempVars>`
+.. |arg_names| replace:: `names`
+.. _arg_names: api.html#tempvars.TempVars
 
-.. |arg_starts| replace:: :class:`starts <tempvars.TempVars>`
+.. |arg_starts| replace:: `starts`
+.. _arg_starts: api.html#tempvars.TempVars
 
-.. |arg_ends| replace:: :class:`ends <tempvars.TempVars>`
+.. |arg_ends| replace:: `ends`
+.. _arg_ends: api.html#tempvars.TempVars
 
-.. |arg_restore| replace:: :class:`restore <tempvars.TempVars>`
+.. |arg_restore| replace:: `restore`
+.. _arg_restore: api.html#tempvars.TempVars
 
 .. |TempVars| replace:: :class:`TempVars <tempvars.TempVars>`
 

@@ -28,7 +28,7 @@ Masking Specific Variables
 --------------------------
 
 The most basic usage is to supply individual variable names in the
-|arg_names| argument:
+|arg_names|_ argument:
 
 .. doctest::
 
@@ -43,10 +43,10 @@ The most basic usage is to supply individual variable names in the
 
 .. note::
 
-    |arg_names| must always be a list of strings, even when
+    |arg_names|_ must always be a list of strings, even when
     only one variable name is passed.
 
-If a variable name passed to |arg_names| doesn't exist in the namespace,
+If a variable name passed to |arg_names|_ doesn't exist in the namespace,
 |TempVars| silently ignores it:
 
 .. doctest::
@@ -79,7 +79,7 @@ only 'starts with' and 'ends with' matching styles are supported:
     >>> print(foo + bar)
     3
 
-To avoid accidental masking of system variables, the |arg_starts|
+To avoid accidental masking of system variables, the |arg_starts|_
 argument cannot start with a double underscore:
 
 .. doctest::
@@ -92,7 +92,7 @@ argument cannot start with a double underscore:
     ...
     Argument rejected
 
-Similarly, |arg_ends| cannot end with a double underscore:
+Similarly, |arg_ends|_ cannot end with a double underscore:
 
 .. doctest::
 
@@ -104,7 +104,7 @@ Similarly, |arg_ends| cannot end with a double underscore:
     ...
     Argument rejected
 
-
+|br|
 
 
  * `starts` and `ends`
