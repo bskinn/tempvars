@@ -263,5 +263,6 @@ def isphx_subst(s):
     return isphx_objpath.format(isphx_objstr.format(s)) if isphx_local else None
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.5', isphx_subst('python'))
+    'python': ('https://docs.python.org/3.5', isphx_subst('python')),
+    'attrs': ('http://www.attrs.org/en/stable', isphx_subst('attrs'))
     }
