@@ -49,8 +49,8 @@ class TempVars(object):
         |False|, no variables are restored.
 
 
-    The ``TempVars`` instance can be bound in the |with| statement for access
-    to stored variables, etc.::
+    The :class:`TempVars` instance can be bound in the |with| statement for
+    access to stored variables, etc.::
 
         >>> with TempVars(names=['abcd']) as tv:
         ...     pass

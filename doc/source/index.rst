@@ -5,13 +5,38 @@ tempvars Documentation
 
 *Streamlined temporary variable management in Jupyter Notebook, IPython, etc.*
 
-[texty text mctexterson]
+A frustrating aspect of working with Jupyter notebooks
+is debugging a worksheet for half an hour
+and discovering a carried-over variable name was hanging around
+in the notebook namespace and causing
+the misbehavior, or opening a notebook that "worked fine" the last
+time it was used because of random variables lingering in the
+namespace. The ``TempVars`` context manager avoids these pitfalls by
+clearing selected identifiers from the namespace for the duration of
+the ``with`` suite, then restoring them afterwards (or not, if desired).
+Further, any variables created within the managed context
+that match the criteria passed to ``TempVars`` are removed from
+the namespace upon exiting, ensuring these values do not spuriously
+contribute to following code. For convenience, all variables
+that were removed from the namespace at both entry and exit
+are stored with their values for later reference
+(*CHANGE THIS TO A LINK TO THE RELEVANT SECTION*).
+
+**NOTE:** Due to the way Python handles non-global variable scopes, ``TempVars``
+can only be used at the global scope. *Any attempt
+to use* ``TempVars`` *in non-global contexts will
+result in a* ``RuntimeError``. Viable use-cases include Jupyter notebooks,
+the IPython and basic Python REPLs, and the outermost scope of executed and
+imported modules. Preliminary testing indicates it also works with
+`cauldron-notebook <https://github.com/sernst/cauldron>`__, though
+it may be less helpful there due to the step-local scoping paradigm used
+(shared values must be passed around via ``cauldron.shared``).
+
+**NOTE ALSO** that ``tempvars`` is *Python 3 only*.
+
+Install with ``pip install tempvars``.
 
 Testing ``doctest``:
-
-.. testsetup testing
-
-..    from tempvars import TempVars
 
 .. doctest:: testing
 

@@ -243,12 +243,24 @@ rst_epilog = """
 
     <br />
 
+.. |arg_names| replace:: :class:`names <tempvars.TempVars>`
+
+.. |arg_starts| replace:: :class:`starts <tempvars.TempVars>`
+
+.. |arg_ends| replace:: :class:`ends <tempvars.TempVars>`
+
+.. |arg_restore| replace:: :class:`restore <tempvars.TempVars>`
+
+.. |TempVars| replace:: :class:`TempVars <tempvars.TempVars>`
+
 """
 
 # Global setup code for all doctests
 doctest_global_setup = """
 
 from tempvars import TempVars
+foo = 1
+bar = 2
 
 """
 

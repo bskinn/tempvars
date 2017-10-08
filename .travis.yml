@@ -8,5 +8,7 @@ python:
 script:
  - python tests.py -a
  - flake8 tempvars
+ - cd doc
+ - make doctest
 
 
