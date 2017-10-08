@@ -24,8 +24,8 @@ been defined as:
 
 .. _usage_basic:
 
-Basic Usage
------------
+Masking Specific Variables
+--------------------------
 
 The most basic usage is to supply individual variable names in the
 |arg_names| argument:
@@ -51,16 +51,60 @@ If a variable name passed to |arg_names| doesn't exist in the namespace,
 
 .. doctest::
 
-    >>> with TempVars(names=['bar']):
+    >>> with TempVars(names=['baz']):
     ...    print('foo' in dir())
     ...    print('bar' in dir())
-    ...    print(2 * foo)
+    ...    print(2 * (foo + bar))
     ...
     True
-    False
-    2
+    True
+    6
     >>> print(2 * foo + bar)
     4
+
+Masking Variables by Pattern
+----------------------------
+
+Variables can also be masked by pattern matching. Currently,
+only 'starts with' and 'ends with' matching styles are supported:
+
+.. doctest::
+
+    >>> with TempVars(starts=['fo'], ends=['ar']):
+    ...     print('foo' in dir())
+    ...     print('bar' in dir())
+    ...
+    False
+    False
+    >>> print(foo + bar)
+    3
+
+To avoid accidental masking of system variables, the |arg_starts|
+argument cannot start with a double underscore:
+
+.. doctest::
+
+    >>> try:
+    ...     with TempVars(starts=['__foo']):
+    ...         pass
+    ... except ValueError:
+    ...     print('Argument rejected')
+    ...
+    Argument rejected
+
+Similarly, |arg_ends| cannot end with a double underscore:
+
+.. doctest::
+
+    >>> try:
+    ...     with TempVars(ends=['foo__']):
+    ...         pass
+    ... except ValueError:
+    ...     print('Argument rejected')
+    ...
+    Argument rejected
+
+
 
 
  * `starts` and `ends`
