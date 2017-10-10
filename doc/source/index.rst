@@ -1,7 +1,7 @@
 .. Root file for tempvars documentation
 
-tempvars Documentation
-======================
+tempvars
+========
 
 *Streamlined temporary variable management in Jupyter Notebook, IPython, etc.*
 
@@ -35,6 +35,13 @@ it may be less helpful there due to the step-local scoping paradigm used
 **NOTE ALSO** that ``tempvars`` is *Python 3 only*.
 
 Install with ``pip install tempvars``.
+
+The project source is hosted on `GitHub <https://github.com/bskinn/tempvars>`__.
+Bug reports and feature requests are welcomed at the
+`Issues <https://github.com/bskinn/tempvars/issues>`__ page there.
+If you like the idea of an existing enhancement in the Issues list,
+please comment to say so; it'll help prioritization.
+
 
 Testing ``doctest``:
 

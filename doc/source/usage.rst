@@ -21,16 +21,13 @@ been defined as:
     :backlinks: top
 
 
-
-.. _usage_basic:
-
 Masking Specific Variables
 --------------------------
 
 The most basic usage is to supply individual variable names in the
 |arg_names|_ argument:
 
-.. doctest::
+.. doctest:: names_basic
 
     >>> with TempVars(names=['foo', 'bar']):
     ...     print('foo' in dir())
@@ -51,7 +48,7 @@ If a variable name passed to |arg_names|_ doesn't exist in the namespace,
 however, still remove any matching variables from the namespace upon exiting
 the |with| block:
 
-.. doctest::
+.. doctest:: names_creatednew
 
     >>> with TempVars(names=['baz']):
     ...     print('foo' in dir())
@@ -64,8 +61,8 @@ the |with| block:
     True
     6
     5
-    >>> print(2 * foo + bar)
-    4
+    >>> print(2 * (foo + bar))
+    6
     >>> 'baz' in dir()
     False
 
@@ -75,7 +72,7 @@ Masking Variables by Pattern
 Variables can also be masked by pattern matching. Currently,
 only 'starts with' and 'ends with' matching styles are supported:
 
-.. doctest::
+.. doctest:: starts_ends_basic
 
     >>> with TempVars(starts=['fo'], ends=['ar']):
     ...     print('foo' in dir())
@@ -86,10 +83,15 @@ only 'starts with' and 'ends with' matching styles are supported:
     >>> print(foo + bar)
     3
 
+.. note::
+
+    |arg_starts|_ and |arg_ends|_ must always be lists of strings, even when
+    only one pattern is passed.
+
 To avoid accidental masking of system variables, the |arg_starts|_
 argument cannot start with a double underscore:
 
-.. doctest::
+.. doctest:: starts_no_dunder
 
     >>> try:
     ...     with TempVars(starts=['__foo']):
@@ -101,7 +103,7 @@ argument cannot start with a double underscore:
 
 Similarly, |arg_ends|_ cannot end with a double underscore:
 
-.. doctest::
+.. doctest:: ends_no_dunder
 
     >>> try:
     ...     with TempVars(ends=['foo__']):
@@ -115,7 +117,7 @@ As well, neither |arg_starts|_ nor |arg_ends|_ can be a single
 underscore, since this also would mask Python system
 variables:
 
-.. doctest::
+.. doctest:: starts_ends_not_underscore
 
     >>> try:
     ...     with TempVars(starts=['_']):
@@ -125,10 +127,11 @@ variables:
     ...
     Argument rejected
 
-|arg_starts|_ and |arg_ends|_ also discard any matching variables created
-within the |with| block, whether they existed previously or not:
+As with |arg_names|_, |arg_starts|_ and |arg_ends|_ also discard any
+matching variables created within the |with| block, whether they existed
+previously or not:
 
-.. doctest::
+.. doctest:: starts_ends_creatednew
 
     >>> with TempVars(starts=['t_'], ends=['_t']):
     ...     t_foo = 6
@@ -148,7 +151,7 @@ Discarding Masked Variables
 If desired, |TempVars| can be instructed not to restore any variables
 it masks from the original namespace:
 
-.. doctest::
+.. doctest:: restore_one_false
 
     >>> with TempVars(names=['foo', 'bar'], restore=False):
     ...     pass
@@ -158,10 +161,10 @@ it masks from the original namespace:
     >>> 'bar' in dir()
     False
 
-|TempVars| contexts can be freely nested to allow selective restore/
-discard behavior:
+|TempVars| contexts can be freely nested to allow selective
+restore/discard behavior:
 
-.. doctest:: mixed_nest_restore
+.. doctest:: restore_mixed_nested
 
     >>> with TempVars(names=['foo'], restore=False):
     ...     with TempVars(names=['bar']):

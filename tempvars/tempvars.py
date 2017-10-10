@@ -61,7 +61,7 @@ class TempVars(object):
     **Class Members**
 
     These objects are accessible via the instance bound as part of the
-    |with| statement (``tv`` from the above example). All are constructed
+    |with| statement (``tv`` from the above snippet). All are constructed
     using :func:`attr.ib() <attrs:attr.ib>`.
 
     """
