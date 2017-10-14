@@ -14,9 +14,19 @@ been defined as:
     foo = 1
     bar = 2
 
+The removal of a pre-existing variable from the namespace for the
+duration of a ``with TempVars`` context is termed **masking** here.
+Temporary variables created within the managed context that match
+one or more of |arg_names|_, |arg_starts|_, and/or |arg_ends|_ are
+**discarded** (removed from the namespace) when exiting the context.
+
+
 .. _usage_toc:
 
-.. contents:: Table of Contents
+Table of Contents
+~~~~~~~~~~~~~~~~~
+
+.. contents::
     :local:
     :backlinks: top
 
@@ -45,7 +55,7 @@ The most basic usage is to supply individual variable names in the
 
 If a variable name passed to |arg_names|_ doesn't exist in the namespace,
 |TempVars| silently ignores it when entering the |with| block. It **does**,
-however, still remove any matching variables from the namespace upon exiting
+however, still discard any matching variables from the namespace upon exiting
 the |with| block:
 
 .. doctest:: names_creatednew
@@ -149,7 +159,8 @@ Discarding Masked Variables
 ---------------------------
 
 If desired, |TempVars| can be instructed not to restore any variables
-it masks from the original namespace:
+it masks from the original namespace, effectively discarding them
+permanently:
 
 .. doctest:: restore_one_false
 
@@ -183,9 +194,65 @@ restore/discard behavior:
 Binding TempVars Instances
 --------------------------
 
-|TempVars| is constructed so that each instance can be bound for later
-inspection as part of the |with| statement:
+|TempVars| is constructed so that each instance can be bound as part
+of the |with| statement, for later inspection within *and* after the
+managed context:
 
+.. doctest:: basic_binding_demo
+
+    >>> with TempVars(names=['foo'], starts=['baz', 'quux'],
+    ...               ends=['ar']) as tv:
+    ...     print(tv.starts)
+    ...     print(tv.ends)
+    ...     print(tv.passed_names)
+    ...     print(tv.names)
+    ...     print('foo' in dir())
+    ...     print('bar' in dir())
+    ['baz', 'quux']
+    ['ar']
+    ['foo']
+    ['foo', 'bar']
+    False
+    False
+
+As can be seen above, the |TempVars| instance stores the |arg_starts|_
+and |arg_ends|_ argument lists as-is in
+:data:`~tempvars.TempVars.starts` and :data:`~tempvars.TempVars.ends`.
+The list of variables provided to |arg_names|_ is stored in
+:data:`~tempvars.TempVars.passed_names`, whereas the
+:data:`~tempvars.TempVars.names` instance variable is populated with the
+entire list of variables masked from the namespace by that instance of
+|TempVars|.
+
+All of these instance variables can also be examined after
+the end of the managed context:
+
+.. doctest:: examine_instance_vars_after
+
+    >>> with TempVars(names['foo', 'baz'], starts=['ba']) as tv:
+    ...     pass
+    >>> print(tv.names)
+    ['foo', 'bar']
+    >>> print(tv.starts)
+    ['ba']
+
+
+Note that even if a given variable matches more than one pattern
+argument, it will still only appear once in
+:data:`~tempvars.TempVars.names`:
+
+.. doctest:: check_no_dupes_in_names
+
+    >>> with TempVars(names=['foo'], starts=['fo'], ends=['oo']) as tv:
+    ...     print(tv.names)
+    ['foo']
+
+
+Inspecting Masked Variables within the Managed Context
+------------------------------------------------------
+
+|TempVars| provides a means to access the masked variables from within
+the managed context,
 
 
 |br|
@@ -193,7 +260,7 @@ inspection as part of the |with| statement:
 
  * binding to `tv`
  * `stored_nsvars` (simple assignment, not copy!)
- * `retained_tempvars`
+ * `retained_tempvars` (also simple assignment!)
  * how `names` populates
  * `passed_names` holding only the original stuff
  * Nested contexts
