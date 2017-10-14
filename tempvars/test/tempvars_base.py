@@ -343,33 +343,40 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
              "f_z = 59\n"
              "d_z = 12\n"
              "g_r = 43\n"
-             "with TempVars(names=['g_r'], starts=['t_'],\n"
+             "with TempVars(names=['g_r', 'm_m'], starts=['t_'],\n"
              "              ends=['_z']) as tv:\n"
+             "    nsvk = tv.stored_nsvars.keys()\n"
              "    g_r_absent = 'g_r' not in dir()\n"
              "    _t_x_absent = 't_x' not in dir()\n"
              "    _t_y_absent = 't_y' not in dir()\n"
              "    r_x_present = 'r_x' in dir()\n"
              "    f_z_absent = 'f_z' not in dir()\n"
              "    d_z_absent = 'd_z' not in dir()\n"
-             "    g_r_in_names = 'g_r' in tv.names\n"
-             "    _t_x_in_names = 't_x' in tv.names\n"
-             "    _t_y_in_names = 't_y' in tv.names\n"
-             "    r_x_not_in_names = 'r_x' not in tv.names\n"
-             "    f_z_in_names = 'f_z' in tv.names\n"
-             "    d_z_in_names = 'd_z' in tv.names\n"
-             "    g_r_in_passed_names = 'g_r' in tv.passed_names\n"
-             "    _t_x_not_in_passed_names = 't_x' not in tv.passed_names\n"
-             "    _t_y_not_in_passed_names = 't_y' not in tv.passed_names\n"
-             "    r_x_not_in_passed_names = 'r_x' not in tv.passed_names\n"
-             "    f_z_not_in_passed_names = 'f_z' not in tv.passed_names\n"
-             "    d_z_not_in_passed_names = 'd_z' not in tv.passed_names\n",
+             "    g_r_in_stored_names = 'g_r' in nsvk\n"
+             "    _t_x_in_stored_names = 't_x' in nsvk\n"
+             "    _t_y_in_stored_names = 't_y' in nsvk\n"
+             "    r_x_not_in_stored_names = 'r_x' not in nsvk\n"
+             "    m_m_not_in_stored_names = 'm_m' not in nsvk\n"
+             "    f_z_in_stored_names = 'f_z' in nsvk\n"
+             "    d_z_in_stored_names = 'd_z' in nsvk\n"
+             "    g_r_in_passed_names = 'g_r' in tv.names\n"
+             "    m_m_in_passed_names = 'm_m' in tv.names\n"
+             "    _t_x_not_in_passed_names = 't_x' not in tv.names\n"
+             "    _t_y_not_in_passed_names = 't_y' not in tv.names\n"
+             "    r_x_not_in_passed_names = 'r_x' not in tv.names\n"
+             "    f_z_not_in_passed_names = 'f_z' not in tv.names\n"
+             "    d_z_not_in_passed_names = 'd_z' not in tv.names\n",
              self.d)
 
         for _ in ['g_r_absent', '_t_x_absent', '_t_y_absent',
                   'r_x_present', 'f_z_absent', 'd_z_absent',
-                  'g_r_in_names', '_t_x_in_names', '_t_y_in_names',
-                  'r_x_not_in_names', 'f_z_in_names', 'd_z_in_names',
-                  'g_r_in_passed_names', '_t_x_not_in_passed_names',
+                  'g_r_in_stored_names', '_t_x_in_stored_names',
+                  '_t_y_in_stored_names',
+                  'r_x_not_in_stored_names',
+                  'm_m_not_in_stored_names', 'f_z_in_stored_names',
+                  'd_z_in_stored_names',
+                  'g_r_in_passed_names', 'm_m_in_passed_names',
+                  '_t_x_not_in_passed_names',
                   '_t_y_not_in_passed_names', 'r_x_not_in_passed_names',
                   'f_z_not_in_passed_names', 'd_z_not_in_passed_names']:
             self.locals_subTest(_, self.d, True)
@@ -574,7 +581,7 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
 
         exec(code, self.d)
 
-        for _ in ['names_len_one', 'nsvars_len_one', 'ret_tempvars_len_one']:
+        for _ in ['nsvars_len_one', 'ret_tempvars_len_one']:
             self.locals_subTest(_, self.d, True)
 
     def test_Good_NoNamesDupes_NamesDuplicatesPassed(self):
@@ -583,7 +590,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y = 15\n"
             "with TempVars(names=['t_y', 't_y']) as tv:\n"
-            "    names_len_one = len(tv.names) == 1\n"
             "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
             "    t_y = 35\n"
             "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
@@ -595,7 +601,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y_f = 15\n"
             "with TempVars(starts=['t_', 't_y']) as tv:\n"
-            "    names_len_one = len(tv.names) == 1\n"
             "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
             "    t_y_f = 35\n"
             "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
@@ -607,7 +612,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y_f = 15\n"
             "with TempVars(ends=['_f', 'y_f']) as tv:\n"
-            "    names_len_one = len(tv.names) == 1\n"
             "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
             "    t_y_f = 35\n"
             "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
@@ -619,7 +623,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y = 15\n"
             "with TempVars(starts=['t_'], ends=['_y']) as tv:\n"
-            "    names_len_one = len(tv.names) == 1\n"
             "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
             "    t_y = 35\n"
             "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
@@ -631,7 +634,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y = 15\n"
             "with TempVars(names=['t_y'], starts=['t_']) as tv:\n"
-            "    names_len_one = len(tv.names) == 1\n"
             "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
             "    t_y = 35\n"
             "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
@@ -643,7 +645,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "from tempvars import TempVars\n"
             "t_y = 15\n"
             "with TempVars(names=['t_y'], ends=['_y']) as tv:\n"
-            "    names_len_one = len(tv.names) == 1\n"
             "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
             "    t_y = 35\n"
             "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"
@@ -656,7 +657,6 @@ class TestTempVarsExpectGood(SuperTestTempVars, ut.TestCase):
             "t_y_f = 15\n"
             "with TempVars(names=['t_y_f'], starts=['t_'],\n"
             "              ends=['_f']) as tv:\n"
-            "    names_len_one = len(tv.names) == 1\n"
             "    nsvars_len_one = len(tv.stored_nsvars) == 1\n"
             "    t_y_f = 35\n"
             "ret_tempvars_len_one = len(tv.retained_tempvars) == 1\n"

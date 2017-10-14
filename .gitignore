@@ -105,3 +105,6 @@ doc/source/isphx/*
 
 # NoteTab Light backup files
 *.bak
+
+# vim swaps
+*.swp

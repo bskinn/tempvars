@@ -196,24 +196,28 @@ Binding TempVars Instances
 
 |TempVars| is constructed so that each instance can be bound as part
 of the |with| statement, for later inspection within *and* after the
-managed context:
+managed context. The masking pattern arguments are stored as-is,
+but are duplicated from the input argument to avoid munging of
+mutable arguments:
 
 .. doctest:: basic_binding_demo
 
-    >>> with TempVars(names=['foo'], starts=['baz', 'quux'],
+    >>> names_in = ['foo']
+    >>> with TempVars(names=names_in, starts=['baz', 'quux'],
     ...               ends=['ar']) as tv:
     ...     print(tv.starts)
     ...     print(tv.ends)
-    ...     print(tv.passed_names)
     ...     print(tv.names)
     ...     print('foo' in dir())
     ...     print('bar' in dir())
     ['baz', 'quux']
     ['ar']
     ['foo']
-    ['foo', 'bar']
     False
     False
+    >>> names_in.append('quorz')
+    >>> print(tv.names)
+    ['foo']
 
 As can be seen above, the |TempVars| instance stores the |arg_starts|_
 and |arg_ends|_ argument lists as-is in
@@ -229,7 +233,7 @@ the end of the managed context:
 
 .. doctest:: examine_instance_vars_after
 
-    >>> with TempVars(names['foo', 'baz'], starts=['ba']) as tv:
+    >>> with TempVars(names=['foo', 'baz'], starts=['ba']) as tv:
     ...     pass
     >>> print(tv.names)
     ['foo', 'bar']

@@ -138,42 +138,42 @@ class TempVars(object):
         return inspect.currentframe().f_back.f_back.f_globals
 
     # ## Internal vars, not set via the attrs __init__
-    #: |dict| container for preserving variables temporarily removed from
+    #: |dict| container for preserving variables masked
     #: the namespace, along with their associated values.
     stored_nsvars = attr.ib(init=False, repr=False,
                             default=attr.Factory(dict))
 
-    #: |dict| container for storing the temporary variables removed from the
-    #: namespace after exiting the |with| block.
+    #: |dict| container for storing the temporary variables discarded from
+    #: the namespace after exiting the |with| block.
     retained_tempvars = attr.ib(init=False, repr=False,
                                 default=attr.Factory(dict))
 
-    #: |list| documenting the initial variables passed to
-    #: :data:`names <TempVars.names>` when instantiating
-    #: :class:`TempVars`.
-    passed_names = attr.ib(init=False, repr=True,
-                           default=attr.Factory(list))
+    def __attrs_post_init__(self):
+        """Store duplicates of passed args to avoid munging."""
+        def copy_if_not_none(v):
+            if v is None:
+                return v
+            else:
+                return v[:]
+        self.names = copy_if_not_none(self.names)
+        self.starts = copy_if_not_none(self.starts)
+        self.ends = copy_if_not_none(self.ends)
 
-    def _pop_to(self, dest_dict, patterns, test_fxn, *, append=True):
+    def _pop_to(self, dest_dict, patterns, test_fxn):
         """Pop matching namespace members to a storage dict.
 
         Namespace variables are popped over to `dest_dict` if
         `test_fxn` is truthy when called with the variable
         name as the first argument and any member of `patterns`
-        as the second argument. The names of any popped variables
-        not already present in `self.names` are appended there, if
-        indicated.
+        as the second argument.
 
         """
         for _ in list(self._ns.keys()):
             # Pop the variable over to the destination dictionary if
-            # any ``map`` result is truthy. Also append to `self.names`
-            # to keep an explicit record of what was popped.
+            # any ``map`` result is truthy.
             if any(map(lambda p, k=_, t=test_fxn: t(k, p),
                        patterns)):
                 dest_dict.update({_: self._ns.pop(_)})
-                if append and _ not in self.names:
-                    self.names.append(_)
 
     def __enter__(self):
         """Context manager entry function.
@@ -183,14 +183,6 @@ class TempVars(object):
         them in `self.stored_nsvars` for later reference.
 
         """
-        # Save the passed names as a copy, to avoid injection into
-        # a list variable passed as the argument. Do this via a set
-        # pass-through to cull any duplicate entries.
-        self.names = list(set(self.names))
-
-        # Save the initial list of tempvars passed for later reference
-        self.passed_names = self.names[:]
-
         # Pop variables if they match exactly anything in `names`
         if self.names is not None:
             self._pop_to(self.stored_nsvars, self.names, str.__eq__)
@@ -217,20 +209,17 @@ class TempVars(object):
         context must handle all errors.
 
         """
-        # Pop variables if they match exactly anything in `passed_names`
+        # Pop variables if they match exactly anything in `names`
         if self.names is not None:
-            self._pop_to(self.retained_tempvars, self.passed_names,
-                         str.__eq__, append=False)
+            self._pop_to(self.retained_tempvars, self.names, str.__eq__)
 
         # Pop variables if they match any starts-with pattern
         if self.starts is not None:
-            self._pop_to(self.retained_tempvars, self.starts, str.startswith,
-                         append=False)
+            self._pop_to(self.retained_tempvars, self.starts, str.startswith)
 
         # Pop variables if they match any ends-with pattern
         if self.ends is not None:
-            self._pop_to(self.retained_tempvars, self.ends, str.endswith,
-                         append=False)
+            self._pop_to(self.retained_tempvars, self.ends, str.endswith)
 
         # If restore is set, then repopulate the namespace with
         # the pre-existing values.  Otherwise, do nothing.
