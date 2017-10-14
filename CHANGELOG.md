@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### [Unreleased]
 
-*...*
+* `TempVars.names` changed to be an exact copy of the `__init__` argument
+  *names*. The actual variables masked can be retrieved as
+  `TempVars.stored_nsvars.keys()`.
+* `TempVars.passed_names` has been completely removed.
+* The `globals()` namespace stored as `TempVars.ns` has been renamed
+  to `._ns` to discourage fiddling with it.
 
 
 ### [1.0.0b2] - 2017-10-01
