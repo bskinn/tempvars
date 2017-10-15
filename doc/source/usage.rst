@@ -196,8 +196,8 @@ Binding TempVars Instances
 
 |TempVars| is constructed so that each instance can be bound as part
 of the |with| statement, for later inspection within *and* after the
-managed context. The masking pattern arguments are stored as-is,
-but are duplicated from the input argument to avoid munging of
+managed context. The masking pattern arguments are stored without
+modification, but are duplicated from the input argument to avoid munging of
 mutable arguments:
 
 .. doctest:: basic_binding_demo
@@ -219,17 +219,8 @@ mutable arguments:
     >>> print(tv.names)
     ['foo']
 
-All of these instance variables can also be examined after
-the end of the managed context:
-
-.. doctest:: examine_instance_vars_after
-
-    >>> with TempVars(names=['foo', 'baz'], starts=['ba']) as tv:
-    ...     pass
-    >>> print(tv.names)
-    ['foo', 'baz']
-    >>> print(tv.starts)
-    ['ba']
+As can be seen above, these instance variables can also be examined after
+the end of the managed context.
 
 
 Inspecting Masked Variables
@@ -252,8 +243,10 @@ instance variable:
 The masked variables remain available after the end of the managed
 context, even if they are not restored when the context exits:
 
-.. doctest:: examine_nsvars
+.. doctest:: examine_nsvars_2
 
+    >>> with TempVars(names=['foo']) as tv:
+    ...     pass
     >>> print(tv.stored_nsvars['foo'])
     1
     >>> baz = 5
@@ -280,7 +273,7 @@ mutable objects are modified after being masked:
     >>> print(tv.stored_nsvars['baz'])
     [1, 3, 12]
 
-If :func:`~copy.copy` or :func:`~copy,deepcopy` behavior is of interest,
+If :func:`~copy.copy` or :func:`~copy.deepcopy` behavior is of interest,
 please add a comment to that effect on the `related GitHub issue
 <https://github.com/bskinn/tempvars/issues/20>`__.
 
