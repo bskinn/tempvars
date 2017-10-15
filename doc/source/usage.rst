@@ -232,17 +232,67 @@ the end of the managed context:
     ['ba']
 
 
-Inspecting Masked Variables within the Managed Context
-------------------------------------------------------
+Inspecting Masked Variables
+---------------------------
 
 |TempVars| provides a means to access the masked variables from within
-the managed context,
+the managed context, via the :data:`~tempvars.TempVars.stored_nsvars`
+instance variable:
 
+.. doctest:: examine_nsvars
+
+    >>> with TempVars(names=['foo']) as tv:
+    ...     print(list(tv.stored_nsvars.keys()))
+    ...     print(tv.stored_nsvars['foo'])
+    ...     print('foo' in dir())
+    ['foo']
+    1
+    False
+
+The masked variables remain available after the end of the managed
+context, even if they are not restored when the context exits:
+
+.. doctest:: examine_nsvars
+
+    >>> print(tv.stored_nsvars['foo'])
+    1
+    >>> baz = 5
+    >>> with TempVars(names=['baz'], restore=False) as tv2:
+    ...     pass
+    >>> print('baz' in dir())
+    False
+    >>> print(tv2.stored_nsvars['baz'])
+    5
+
+A caveat: the masked variables are bound within
+:data:`~tempvars.TempVars.stored_nsvars` by simple assignment,
+which can have (possibly undesired) side effects when
+mutable objects are modified after being masked:
+
+.. doctest:: nsvars_mutable_munging
+
+    >>> baz = [1, 2, 3]
+    >>> with TempVars(names=['baz']) as tv:
+    ...     tv.stored_nsvars['baz'].append(12)
+    >>> print(baz)
+    [1, 2, 3, 12]
+    >>> baz.remove(2)
+    >>> print(tv.stored_nsvars['baz'])
+    [1, 3, 12]
+
+If :func:`~copy.copy` or :func:`~copy,deepcopy` behavior is of interest,
+please add a comment to that effect on the `related GitHub issue
+<https://github.com/bskinn/tempvars/issues/20>`__.
+
+
+Inspecting Discarded Temporary Variables
+----------------------------------------
+
+In an analogous fashion to :data:`~tempvars.TempVars.stored_nsvars`,
+the temporary variables
 
 |br|
 
 
- * binding to `tv`
- * `stored_nsvars` (simple assignment, not copy!)
  * `retained_tempvars` (also simple assignment!)
 
