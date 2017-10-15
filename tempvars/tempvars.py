@@ -67,8 +67,7 @@ class TempVars(object):
     """
 
     # ## Arguments indicating variables to treat as temporary vars
-    #: |list| containing the |str| names of all variables actually
-    #: masked from the namespace upon entry to the |with| block.
+    #: |list| of |str| - All variable names passed to |arg_names|_.
     names = attr.ib(default=attr.Factory(list))
 
     #: |list| of |str| - All passed :meth:`.startswith <str.startswith>`
@@ -134,11 +133,11 @@ class TempVars(object):
         # definition time(? at import?), which apparently changes
         # the relevant scope in a significant way (likely it makes
         # this module the accessed scope, rather than the scope of
-        # the instantiation call.
+        # the instantiation call).
         return inspect.currentframe().f_back.f_back.f_globals
 
     # ## Internal vars, not set via the attrs __init__
-    #: |dict| container for preserving variables masked
+    #: |dict| container for preserving variables masked from
     #: the namespace, along with their associated values.
     stored_nsvars = attr.ib(init=False, repr=False,
                             default=attr.Factory(dict))
@@ -151,10 +150,9 @@ class TempVars(object):
     def __attrs_post_init__(self):
         """Store duplicates of passed args to avoid munging."""
         def copy_if_not_none(v):
-            if v is None:
-                return v
-            else:
-                return v[:]
+            """Relies on `v` being a finite-size iterable if it's not None."""
+            return v if v is None else v[:]
+
         self.names = copy_if_not_none(self.names)
         self.starts = copy_if_not_none(self.starts)
         self.ends = copy_if_not_none(self.ends)

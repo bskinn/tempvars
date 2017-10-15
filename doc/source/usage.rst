@@ -137,7 +137,7 @@ variables:
     ...
     Argument rejected
 
-As with |arg_names|_, |arg_starts|_ and |arg_ends|_ also discard any
+As with |arg_names|_, |arg_starts|_ and |arg_ends|_ also discard at exit any
 matching variables created within the |with| block, whether they existed
 previously or not:
 
@@ -219,7 +219,7 @@ mutable arguments:
     >>> print(tv.names)
     ['foo']
 
-As can be seen above, these instance variables can also be examined after
+As shown above, these instance variables can also be examined after
 the end of the managed context.
 
 
@@ -249,13 +249,12 @@ context, even if they are not restored when the context exits:
     ...     pass
     >>> print(tv.stored_nsvars['foo'])
     1
-    >>> baz = 5
-    >>> with TempVars(names=['baz'], restore=False) as tv2:
+    >>> with TempVars(names=['bar'], restore=False) as tv2:
     ...     pass
-    >>> print('baz' in dir())
+    >>> print('bar' in dir())
     False
-    >>> print(tv2.stored_nsvars['baz'])
-    5
+    >>> print(tv2.stored_nsvars['bar'])
+    2
 
 A caveat: the masked variables are bound within
 :data:`~tempvars.TempVars.stored_nsvars` by simple assignment,
