@@ -234,6 +234,8 @@ As shown above, these instance variables can also be examined after
 the end of the managed context.
 
 
+.. _usage_stored_nsvars:
+
 Inspecting Masked Variables
 ---------------------------
 
@@ -287,6 +289,8 @@ If :func:`~copy.copy` or :func:`~copy.deepcopy` behavior is of interest,
 please add a comment to that effect on the
 `related GitHub issue <copy_deepcopy_>`_.
 
+
+.. _usage_ret_tempvars:
 
 Inspecting Discarded Temporary Variables
 ----------------------------------------
