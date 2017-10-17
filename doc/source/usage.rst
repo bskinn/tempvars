@@ -20,6 +20,14 @@ Temporary variables created within the managed context that match
 one or more of |arg_names|_, |arg_starts|_, and/or |arg_ends|_ are
 **discarded** (removed from the namespace) when exiting the context.
 
+.. note::
+
+    The most common use case us anticipated to be via either
+    |arg_starts| or |arg_ends|, where a common prefix or suffix,
+    respectively (such as `t_` or `_t`), is used to mark all
+    temporary variables within the managed context. See
+    ":ref:`usage_pattern_masking`," below.
+
 
 .. _usage_toc:
 
@@ -75,6 +83,9 @@ the |with| block:
     6
     >>> 'baz' in dir()
     False
+
+
+.. _usage_pattern_masking:
 
 Masking Variables by Pattern
 ----------------------------
@@ -243,7 +254,7 @@ instance variable:
 The masked variables remain available after the end of the managed
 context, even if they are not restored when the context exits:
 
-.. doctest:: examine_nsvars_2
+.. doctest:: examine_nsvars_norestore
 
     >>> with TempVars(names=['foo']) as tv:
     ...     pass
@@ -273,18 +284,47 @@ mutable objects are modified after being masked:
     [1, 3, 12]
 
 If :func:`~copy.copy` or :func:`~copy.deepcopy` behavior is of interest,
-please add a comment to that effect on the `related GitHub issue
-<https://github.com/bskinn/tempvars/issues/20>`__.
+please add a comment to that effect on the
+`related GitHub issue <copy_deepcopy_>`_.
 
 
 Inspecting Discarded Temporary Variables
 ----------------------------------------
 
 In an analogous fashion to :data:`~tempvars.TempVars.stored_nsvars`,
-the temporary variables
+the temporary variables discarded from the namespace at the exit of
+the managed context are stored in
+:data:`~tempvars.TempVars.retained_tempvars`:
 
-|br|
+.. doctest:: examine_ret_tempvars
+
+    >>> with TempVars(names=['foo']) as tv:
+    ...     foo = 5
+    ...     print(foo * bar)
+    10
+    >>> print(foo + tv.retained_tempvars['foo'])
+    6
+
+Also as with :data:`~tempvars.TempVars.stored_nsvars`, at this time
+the values within :data:`~tempvars.TempVars.retained_tempvars` are
+bound by simple assignment, leading to similar possible side effects:
+
+.. doctest:: munging_ret_tempvars
+
+    >>> baz = [1, 2]
+    >>> with TempVars(names=['baz']) as tv:
+    ...     tv.stored_nsvars['baz'].append(3)
+    ...     baz = tv.stored_nsvars['baz']
+    >>> tv.retained_tempvars['baz'].append(4)
+    >>> print(baz)
+    [1, 2, 3, 4]
+
+As above, if :func:`~copy.copy` and/or :func:`~copy.deepcopy`
+behavior is of interest, please comment on the
+`relevant GitHub issue <copy_deepcopy_>`_.
 
 
- * `retained_tempvars` (also simple assignment!)
+
+.. _copy_deepcopy: https://github.com/bskinn/tempvars/issues/20
+
 
