@@ -13,7 +13,7 @@
 #
 # ------------------------------------------------------------------------------
 
-"""Base of ``tempvars`` package.
+"""Base module of ``tempvars`` package.
 
 .. autoclass:: TempVars
     :members:

@@ -91,9 +91,14 @@ may be rewritten dramatically, without warning.
 
 Available on PyPI: ``pip install tempvars``.
 
-Source on `GitHub <https://github.com/bskinn/tempvars>`__.
+Source on `GitHub <https://github.com/bskinn/tempvars>`__. Bug reports
+and feature requests are welcomed at the
+`Issues <https://github.com/bskinn/tempvars/issues>`__ page there.
+If you like the idea of an existing enhancement in the Issues list,
+please comment to say so; it'll help me prioritization.
 
-Full documentation (pending) at `Read the Docs <http://tempvars.readthedocs.io>`__.
+Full documentation at
+`Read the Docs <http://tempvars.readthedocs.io>`__.
 
 Copyright (c) Brian Skinn 2017
 
