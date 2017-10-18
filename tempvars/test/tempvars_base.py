@@ -16,6 +16,7 @@
 """Base module for tempvars tests."""
 
 
+import doctest as dt
 import unittest as ut
 
 
@@ -730,11 +731,17 @@ class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
             exec(code, self.d)
 
 
+# Doctest suite for testing README.rst example code
+SuiteDoctestReadme = dt.DocFileSuite('README.rst',
+                                     module_relative=False)
+
+
 def suite_expect_good():
     """Create and return the test suite for expect-good cases."""
     s = ut.TestSuite()
     tl = ut.TestLoader()
-    s.addTests([tl.loadTestsFromTestCase(TestTempVarsExpectGood)])
+    s.addTests([tl.loadTestsFromTestCase(TestTempVarsExpectGood),
+               SuiteDoctestReadme])
 
     return s
 
