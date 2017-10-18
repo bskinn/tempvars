@@ -36,37 +36,27 @@ After installing with ``pip install tempvars``, import as:
 
 .. code:: python
 
-    from tempvars import TempVars
+    >>> from tempvars import TempVars
 
 Example Jupyter notebook input:
 
 .. code:: python
 
-    t_var1 = 5
-    t_var2 = 7
-    x = 15
-    y = 20
-    with TempVars(names=['x']) as tv1:
-        with TempVars(starts=['t_'], restore=False) as tv2:
-            print('      x present inside:  ' + str('x' in dir()))
-            print(' t_var1 present inside:  ' + str('t_var1' in dir()))
-            print(' t_var2 present inside:  ' + str('t_var2' in dir()))
-            print('        y value inside:  ' + str(y))
-            print('     tv1.stored_nsvars:  ' + str(tv1.stored_nsvars))
-            print('     tv2.stored_nsvars:  ' + str(tv2.stored_nsvars))
-            x = -3
-            t_var3 = -7
-            print(' (x, t_var3, y) inside:  ' + str((x, t_var3, y)))
-    print('   -------------------------------')
-    print('        (x, y) outside:  ' + str((x, y)))
-    print('t_var1 present outside:  ' + str('t_var1' in dir()))
-    print('t_var2 present outside:  ' + str('t_var2' in dir()))
-    print('t_var3 present outside:  ' + str('t_var3' in dir()))
-    print(' tv1.retained_tempvars:  ' + str(tv1.retained_tempvars))
-    print(' tv2.retained_tempvars:  ' + str(tv2.retained_tempvars))
-
-Output::
-
+    >>> t_var1 = 5
+    >>> t_var2 = 7
+    >>> x = 15
+    >>> y = 20
+    >>> with TempVars(names=['x']) as tv1:
+    ...     with TempVars(starts=['t_'], restore=False) as tv2:
+    ...         print('      x present inside:  ' + str('x' in dir()))
+    ...         print(' t_var1 present inside:  ' + str('t_var1' in dir()))
+    ...         print(' t_var2 present inside:  ' + str('t_var2' in dir()))
+    ...         print('        y value inside:  ' + str(y))
+    ...         print('     tv1.stored_nsvars:  ' + str(tv1.stored_nsvars))
+    ...         print('     tv2.stored_nsvars:  ' + str(tv2.stored_nsvars))
+    ...         x = -3
+    ...         t_var3 = -7
+    ...         print(' (x, t_var3, y) inside:  ' + str((x, t_var3, y)))
           x present inside:  False
      t_var1 present inside:  False
      t_var2 present inside:  False
@@ -74,12 +64,17 @@ Output::
          tv1.stored_nsvars:  {'x': 15}
          tv2.stored_nsvars:  {'t_var1': 5, 't_var2': 7}
      (x, t_var3, y) inside:  (-3, -7, 20)
-       -------------------------------
+    >>> print('        (x, y) outside:  ' + str((x, y)))
             (x, y) outside:  (15, 20)
+    >>> print('t_var1 present outside:  ' + str('t_var1' in dir()))
     t_var1 present outside:  False
+    >>> print('t_var2 present outside:  ' + str('t_var2' in dir()))
     t_var2 present outside:  False
+    >>> print('t_var3 present outside:  ' + str('t_var3' in dir()))
     t_var3 present outside:  False
+    >>> print(' tv1.retained_tempvars:  ' + str(tv1.retained_tempvars))
      tv1.retained_tempvars:  {'x': -3}
+    >>> print(' tv2.retained_tempvars:  ' + str(tv2.retained_tempvars))
      tv2.retained_tempvars:  {'t_var3': -7}
 
 
