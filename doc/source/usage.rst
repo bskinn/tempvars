@@ -1,7 +1,7 @@
 .. Usage info main page for tempvars
 
-tempvars - Usage Examples
-=========================
+tempvars Usage Examples
+=======================
 
 In all of these examples, it is assumed that |TempVars|
 has already been imported and that `foo` and `bar` have

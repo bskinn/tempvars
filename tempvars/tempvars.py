@@ -18,7 +18,7 @@
 import attr
 
 
-@attr.s()
+@attr.s(slots=True)
 class TempVars(object):
     """Context manager for handling temporary variables at the global scope.
 
@@ -68,7 +68,7 @@ class TempVars(object):
 
     # ## Arguments indicating variables to treat as temporary vars
     #: |list| of |str| - All variable names passed to |arg_names|_.
-    names = attr.ib(default=attr.Factory(list))
+    names = attr.ib(default=None)
 
     #: |list| of |str| - All passed :meth:`.startswith <str.startswith>`
     #: matching patterns.
@@ -148,11 +148,20 @@ class TempVars(object):
                                 default=attr.Factory(dict))
 
     def __attrs_post_init__(self):
-        """Store duplicates of passed args to avoid munging."""
+        """Process arguments post-init in various ways."""
+        import warnings
+
         def copy_if_not_none(v):
-            """Relies on `v` being a finite-size iterable if it's not None."""
+            """Return a copy of the input argument if it's not None."""
+            # This relies on `v` being a finite-size iterable if isn't None
             return v if v is None else v[:]
 
+        # Trigger a warning if no patterns were passed
+        if all(map(lambda a: a is None, (self.names, self.starts, self.ends))):
+            warnings.warn("No masking patterns provided for TempVars",
+                          RuntimeWarning, stacklevel=2)
+
+        # Copy any arguments that aren't None
         self.names = copy_if_not_none(self.names)
         self.starts = copy_if_not_none(self.starts)
         self.ends = copy_if_not_none(self.ends)

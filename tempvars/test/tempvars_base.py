@@ -718,6 +718,17 @@ class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
             with TempVars(names=['abcd']):
                 pass    # pragma: no cover
 
+    def test_Fail_NoPatternArgsWarning(self):
+        """Confirm `RuntimeWarning` if no pattern arguments are passed."""
+        code = (
+            "from tempvars import TempVars\n"
+            "with TempVars():\n"
+            "    pass\n"
+            )
+
+        with self.assertWarns(RuntimeWarning):
+            exec(code, self.d)
+
 
 def suite_expect_good():
     """Create and return the test suite for expect-good cases."""
