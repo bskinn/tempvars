@@ -29,7 +29,7 @@ in the usage instructions.
 **NOTE:** Due to the way Python handles non-global variable scopes, |TempVars|
 can only be used at the global scope. *Any attempt
 to use* |TempVars| *in non-global contexts will result in a*
-:exc:`~exceptions.RuntimeError`. Viable use-cases include Jupyter notebooks,
+:exc:`RuntimeError`. Viable use-cases include Jupyter notebooks,
 the IPython and basic Python REPLs, and the outermost scope of executed and
 imported modules. Preliminary testing indicates it also works with
 `cauldron-notebook <https://github.com/sernst/cauldron>`__, though
