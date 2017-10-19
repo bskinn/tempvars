@@ -12,13 +12,13 @@ in the notebook namespace and causing
 that cryptic misbehavior. Similarly, it's incredibly annoying to open
 a broken notebook that "worked fine" the last
 time it was used because of random variables lingering in the
-namespace. 
+namespace.
 
-The ``TempVars`` context manager helps to avoid these pitfalls by
+The |TempVars| context manager helps to avoid these pitfalls by
 masking selected identifiers from the namespace for the duration of
-the ``with`` suite, then restoring them afterwards (or not, if desired).
+the |with| suite, then restoring them afterwards (or not, if desired).
 Further, any variables created within the managed context
-that match the criteria passed to ``TempVars`` are removed from
+that match the criteria passed to |TempVars| are removed from
 the namespace upon exiting, ensuring these values do not spuriously
 contribute to following code. For convenience, all variables
 that were removed from the namespace at both entry and exit
@@ -26,10 +26,10 @@ are stored with their values for later reference; see
 :ref:`usage_stored_nsvars` and :ref:`usage_ret_tempvars`, respectively,
 in the usage instructions.
 
-**NOTE:** Due to the way Python handles non-global variable scopes, ``TempVars``
+**NOTE:** Due to the way Python handles non-global variable scopes, |TempVars|
 can only be used at the global scope. *Any attempt
-to use* ``TempVars`` *in non-global contexts will
-result in a* ``RuntimeError``. Viable use-cases include Jupyter notebooks,
+to use* |TempVars| *in non-global contexts will result in a*
+:exc:`~exceptions.RuntimeError`. Viable use-cases include Jupyter notebooks,
 the IPython and basic Python REPLs, and the outermost scope of executed and
 imported modules. Preliminary testing indicates it also works with
 `cauldron-notebook <https://github.com/sernst/cauldron>`__, though
