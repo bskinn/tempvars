@@ -108,3 +108,6 @@ doc/source/isphx/*
 
 # vim swaps
 *.swp
+
+# .tmp file because just in case
+*.tmp
