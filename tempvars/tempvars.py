@@ -157,7 +157,8 @@ class TempVars(object):
             return v if v is None else v[:]
 
         # Trigger a warning if no patterns were passed
-        if all(map(lambda a: a is None, (self.names, self.starts, self.ends))):
+        if all(map(lambda a: a is None or len(a) == 0,
+                   (self.names, self.starts, self.ends))):
             warnings.warn("No masking patterns provided for TempVars",
                           RuntimeWarning, stacklevel=2)
 

@@ -722,13 +722,26 @@ class TestTempVarsExpectFail(SuperTestTempVars, ut.TestCase):
     def test_Fail_NoPatternArgsWarning(self):
         """Confirm `RuntimeWarning` if no pattern arguments are passed."""
         code = (
-            "from tempvars import TempVars\n"
-            "with TempVars():\n"
-            "    pass\n"
-            )
+                "from tempvars import TempVars\n"
+                "with TempVars():\n"
+                "    pass\n"
+                )
 
         with self.assertWarns(RuntimeWarning):
             exec(code, self.d)
+
+    def test_Fail_EmptyListArgWarnings(self):
+        """Confirm `RuntimeWarning` if empty list passed."""
+        code = (
+                "from tempvars import TempVars\n"
+                "with TempVars(**{{'{0}': []}}):\n"
+                "    pass\n"
+                )
+        for _ in ['names', 'starts', 'ends']:
+            self.d = {}
+            with self.subTest(_):
+                with self.assertWarns(RuntimeWarning):
+                    exec(code.format(_), self.d)
 
 
 # Doctest suite for testing README.rst example code
