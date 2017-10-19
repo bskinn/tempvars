@@ -5,15 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+All references below to the variable `tv` indicate an instance of
+`TempVars` that has been bound as
+
+```
+with TempVars(...) as tv:
+```
 
 ### [Unreleased]
 
-* `TempVars.names` changed to be an exact copy of the `__init__` argument
+#### Added
+
+* `TempVars` now emits a warning if it is instantiated without
+  masking pattern arguments.
+
+#### Changed
+	
+* `TempVars().names` changed to be an exact copy of the `__init__` argument
   *names*. The actual variables masked can be retrieved as
-  `TempVars.stored_nsvars.keys()`.
-* `TempVars.passed_names` has been completely removed.
+  `tv.stored_nsvars.keys()`.
+* Since, due to the above, initialization of `names` as a new, empty list
+  is no longer needed, its default was changed to `None` 
 * The `globals()` namespace stored as `TempVars.ns` has been renamed
   to `._ns` to discourage fiddling with it.
+* `TempVars` changed to be an `@attr.s(slots=True)` class.
+
+#### Removed
+
+* `TempVars.passed_names` has been completely removed.
 
 
 ### [1.0.0b2] - 2017-10-01
