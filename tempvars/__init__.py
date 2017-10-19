@@ -13,7 +13,7 @@
 #
 # ------------------------------------------------------------------------------
 
-"""Base of ``tempvars`` package.
+"""Base module of ``tempvars`` package.
 
 .. autoclass:: TempVars
     :members:
@@ -26,4 +26,4 @@ __all__ = ['TempVars']
 
 from .tempvars import TempVars
 
-__version__ = '1.0b2'
+__version__ = '1.0'
