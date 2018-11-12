@@ -5,10 +5,9 @@ python:
  - 3.4
  - 3.5
  - 3.6
+ - 3.7-dev
 script:
  - python tests.py -a
  - flake8 tempvars
- - cd doc
- - make doctest
-
+ - sh -c 'cd doc; make doctest'
 
