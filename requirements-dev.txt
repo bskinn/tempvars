@@ -1,5 +1,8 @@
 attrs>=17
+black
 flake8
 flake8-docstrings
+restview
 sphinx
 sphinx-rtd-theme
+tox

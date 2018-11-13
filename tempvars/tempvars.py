@@ -94,19 +94,22 @@ class TempVars(object):
         for s in val:
             if type(s) != str:
                 raise te
-            if at.name != 'names' and (s == '_' or s == '__'):
-                raise ValueError("'_' and '__' are not permitted "
-                                 "for '{0}'".format(at.name))
-            if at.name == 'starts' and s.startswith('__'):
+            if at.name != "names" and (s == "_" or s == "__"):
+                raise ValueError(
+                    "'_' and '__' are not permitted "
+                    "for '{0}'".format(at.name)
+                )
+            if at.name == "starts" and s.startswith("__"):
                 raise ValueError("'starts' may not start with '__'")
-            if at.name == 'ends' and s.endswith('__'):
+            if at.name == "ends" and s.endswith("__"):
                 raise ValueError("'ends' may not end with '__'")
 
     # ## Flag for whether to restore the prior namespace contents
     #: |bool| flag indicating whether to restore the prior namespace
     #: contents. **Can** be changed within the |with| suite.
-    restore = attr.ib(default=True,
-                      validator=attr.validators.instance_of(bool))
+    restore = attr.ib(
+        default=True, validator=attr.validators.instance_of(bool)
+    )
 
     # ## Namespace for temp variable management.
     # Always the globals at the level of the invoker of the TempVars
@@ -139,13 +142,13 @@ class TempVars(object):
     # ## Internal vars, not set via the attrs __init__
     #: |dict| container for preserving variables masked from
     #: the namespace, along with their associated values.
-    stored_nsvars = attr.ib(init=False, repr=False,
-                            default=attr.Factory(dict))
+    stored_nsvars = attr.ib(init=False, repr=False, default=attr.Factory(dict))
 
     #: |dict| container for storing the temporary variables discarded from
     #: the namespace after exiting the |with| block.
-    retained_tempvars = attr.ib(init=False, repr=False,
-                                default=attr.Factory(dict))
+    retained_tempvars = attr.ib(
+        init=False, repr=False, default=attr.Factory(dict)
+    )
 
     def __attrs_post_init__(self):
         """Process arguments post-init in various ways."""
@@ -157,10 +160,17 @@ class TempVars(object):
             return v if v is None else v[:]
 
         # Trigger a warning if no patterns were passed
-        if all(map(lambda a: a is None or len(a) == 0,
-                   (self.names, self.starts, self.ends))):
-            warnings.warn("No masking patterns provided for TempVars",
-                          RuntimeWarning, stacklevel=2)
+        if all(
+            map(
+                lambda a: a is None or len(a) == 0,
+                (self.names, self.starts, self.ends),
+            )
+        ):
+            warnings.warn(
+                "No masking patterns provided for TempVars",
+                RuntimeWarning,
+                stacklevel=2,
+            )
 
         # Copy any arguments that aren't None
         self.names = copy_if_not_none(self.names)
@@ -179,8 +189,7 @@ class TempVars(object):
         for _ in list(self._ns.keys()):
             # Pop the variable over to the destination dictionary if
             # any ``map`` result is truthy.
-            if any(map(lambda p, k=_, t=test_fxn: t(k, p),
-                       patterns)):
+            if any(map(lambda p, k=_, t=test_fxn: t(k, p), patterns)):
                 dest_dict.update({_: self._ns.pop(_)})
 
     def __enter__(self):
@@ -238,5 +247,5 @@ class TempVars(object):
         return False
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
     print("Module not executable.")
