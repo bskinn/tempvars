@@ -17,6 +17,6 @@
 
 from __future__ import absolute_import
 
-__all__ = ['suite_expect_good', 'suite_expect_fail']
+__all__ = ["suite_expect_good", "suite_expect_fail"]
 
 from .tempvars_base import suite_expect_good, suite_expect_fail
