@@ -4,3 +4,4 @@ tempvars API
 ============
 
 .. autoclass:: tempvars.TempVars
+    :members:
