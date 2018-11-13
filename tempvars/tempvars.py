@@ -1,19 +1,28 @@
-# ------------------------------------------------------------------------------
-# Name:        tempvars.py
-# Purpose:     Module defining the TempVars class
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     10 Sep 2017
-# Copyright:   (c) Brian Skinn 2017
-# License:     The MIT License; see "LICENSE.txt" for full license terms.
-#
-#       https://www.github.com/bskinn/tempvars
-#
-# ------------------------------------------------------------------------------
+r"""``TempVars`` *class definition.*
 
-"""Core module defining the TempVars class."""
+This module is part of ``tempvars``,
+a context manager for handling temporary variables in
+Jupyter Notebook, IPython, etc.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    10 Sep 2017
+
+**Copyright**
+    \(c) Brian Skinn 2017-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/tempvars
+
+**Documentation**
+    http://tempvars.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+"""
 
 import attr
 

@@ -3,4 +3,4 @@
 tempvars API
 ============
 
-.. automodule:: tempvars
+.. autoclass:: tempvars.TempVars
