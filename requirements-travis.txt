@@ -1,4 +1,6 @@
 attrs>=17
+codecov
+coverage
 flake8
 flake8-docstrings
 sphinx

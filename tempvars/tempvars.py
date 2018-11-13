@@ -1,19 +1,28 @@
-# ------------------------------------------------------------------------------
-# Name:        tempvars.py
-# Purpose:     Module defining the TempVars class
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     10 Sep 2017
-# Copyright:   (c) Brian Skinn 2017
-# License:     The MIT License; see "LICENSE.txt" for full license terms.
-#
-#       https://www.github.com/bskinn/tempvars
-#
-# ------------------------------------------------------------------------------
+r"""``TempVars`` *class definition*.
 
-"""Core module defining the TempVars class."""
+This module is part of ``tempvars``,
+a context manager for handling temporary variables in
+Jupyter Notebook, IPython, etc.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    10 Sep 2017
+
+**Copyright**
+    \(c) Brian Skinn 2017-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/tempvars
+
+**Documentation**
+    http://tempvars.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+"""
 
 import attr
 
@@ -152,12 +161,8 @@ class TempVars(object):
 
     def __attrs_post_init__(self):
         """Process arguments post-init in various ways."""
+        from copy import copy
         import warnings
-
-        def copy_if_not_none(v):
-            """Return a copy of the input argument if it's not None."""
-            # This relies on `v` being a finite-size iterable if isn't None
-            return v if v is None else v[:]
 
         # Trigger a warning if no patterns were passed
         if all(
@@ -173,9 +178,9 @@ class TempVars(object):
             )
 
         # Copy any arguments that aren't None
-        self.names = copy_if_not_none(self.names)
-        self.starts = copy_if_not_none(self.starts)
-        self.ends = copy_if_not_none(self.ends)
+        self.names = copy(self.names)
+        self.starts = copy(self.starts)
+        self.ends = copy(self.ends)
 
     def _pop_to(self, dest_dict, patterns, test_fxn):
         """Pop matching namespace members to a storage dict.

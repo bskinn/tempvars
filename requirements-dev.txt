@@ -1,5 +1,6 @@
 attrs>=17
 black
+coverage
 flake8
 flake8-docstrings
 restview

@@ -276,5 +276,5 @@ def isphx_subst(s):
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.5', isphx_subst('python')),
-    'attrs': ('http://www.attrs.org/en/stable', isphx_subst('attrs'))
+    'attrs': ('https://www.attrs.org/en/stable', isphx_subst('attrs'))
     }
