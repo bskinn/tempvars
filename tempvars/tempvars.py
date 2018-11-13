@@ -1,4 +1,4 @@
-r"""``TempVars`` *class definition.*
+r"""``TempVars`` *class definition*.
 
 This module is part of ``tempvars``,
 a context manager for handling temporary variables in
