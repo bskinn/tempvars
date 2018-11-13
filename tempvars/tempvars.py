@@ -161,12 +161,8 @@ class TempVars(object):
 
     def __attrs_post_init__(self):
         """Process arguments post-init in various ways."""
+        from copy import copy
         import warnings
-
-        def copy_if_not_none(v):
-            """Return a copy of the input argument if it's not None."""
-            # This relies on `v` being a finite-size iterable if isn't None
-            return v if v is None else v[:]
 
         # Trigger a warning if no patterns were passed
         if all(
@@ -182,9 +178,9 @@ class TempVars(object):
             )
 
         # Copy any arguments that aren't None
-        self.names = copy_if_not_none(self.names)
-        self.starts = copy_if_not_none(self.starts)
-        self.ends = copy_if_not_none(self.ends)
+        self.names = copy(self.names)
+        self.starts = copy(self.starts)
+        self.ends = copy(self.ends)
 
     def _pop_to(self, dest_dict, patterns, test_fxn):
         """Pop matching namespace members to a storage dict.
