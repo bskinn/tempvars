@@ -44,13 +44,15 @@ Recommended Standard Usage
 --------------------------
 
 This author's standard approach for using :class:`~tempvars.TempVars`
-is to make use of the `starts` argument as follows:
+is via the `starts` argument as follows:
 
 .. doctest:: recommended
 
     >>> with TempVars(starts=['t_']):
     ...     t_foo = foo
     ...     t_baz = foo + bar
+    ...     print(t_foo + t_baz)
+    4
     >>> print('t_foo' in dir())
     False
     >>> print('t_baz' in dir())
