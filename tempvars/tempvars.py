@@ -1,19 +1,28 @@
-# ------------------------------------------------------------------------------
-# Name:        tempvars.py
-# Purpose:     Module defining the TempVars class
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     10 Sep 2017
-# Copyright:   (c) Brian Skinn 2017
-# License:     The MIT License; see "LICENSE.txt" for full license terms.
-#
-#       https://www.github.com/bskinn/tempvars
-#
-# ------------------------------------------------------------------------------
+r"""``TempVars`` *class definition*.
 
-"""Core module defining the TempVars class."""
+This module is part of ``tempvars``,
+a context manager for handling temporary variables in
+Jupyter Notebook, IPython, etc.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    10 Sep 2017
+
+**Copyright**
+    \(c) Brian Skinn 2017-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/tempvars
+
+**Documentation**
+    http://tempvars.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+"""
 
 import attr
 
@@ -94,19 +103,25 @@ class TempVars(object):
         for s in val:
             if type(s) != str:
                 raise te
-            if at.name != 'names' and (s == '_' or s == '__'):
-                raise ValueError("'_' and '__' are not permitted "
-                                 "for '{0}'".format(at.name))
-            if at.name == 'starts' and s.startswith('__'):
+
+            if at.name != "names" and (s == "_" or s == "__"):
+                raise ValueError(
+                    "'_' and '__' are not permitted "
+                    "for '{0}'".format(at.name)
+                )
+
+            if at.name == "starts" and s.startswith("__"):
                 raise ValueError("'starts' may not start with '__'")
-            if at.name == 'ends' and s.endswith('__'):
+
+            if at.name == "ends" and s.endswith("__"):
                 raise ValueError("'ends' may not end with '__'")
 
     # ## Flag for whether to restore the prior namespace contents
     #: |bool| flag indicating whether to restore the prior namespace
     #: contents. **Can** be changed within the |with| suite.
-    restore = attr.ib(default=True,
-                      validator=attr.validators.instance_of(bool))
+    restore = attr.ib(
+        default=True, validator=attr.validators.instance_of(bool)
+    )
 
     # ## Namespace for temp variable management.
     # Always the globals at the level of the invoker of the TempVars
@@ -115,6 +130,18 @@ class TempVars(object):
 
     @_ns.default
     def _ns_default(self):
+        """Assign the globals() namespace of the instantiating scope.
+
+        This "default value" needs to be crafted this way
+        because this way it's evaluated at run time, during instantiation.
+        Putting the globals() retrieval attempt directly in the attr.ib()
+        signature above would instead make the evaluation occur at
+        import/definition, which changes the relevant scope in a
+        significant way: it makes **this module** the scope of
+        the invocation of globals(), rather than the scope of
+        the instantiation call.
+
+        """
         import inspect
 
         # Need two f_back's since this call is inside a method that's
@@ -126,46 +153,41 @@ class TempVars(object):
         if fm.f_locals is not fm.f_globals:
             raise RuntimeError("TempVars can only be used in the global scope")
 
-        # This default needs to be crafted this way
-        # because it's evaluated at run time, during instantiation.
-        # Putting the globals() retrieval attempt directly in the attr.ib()
-        # signature above would make the evaluation occur at
-        # definition time(? at import?), which apparently changes
-        # the relevant scope in a significant way (likely it makes
-        # this module the accessed scope, rather than the scope of
-        # the instantiation call).
-        return inspect.currentframe().f_back.f_back.f_globals
+        return fm.f_globals
 
     # ## Internal vars, not set via the attrs __init__
     #: |dict| container for preserving variables masked from
     #: the namespace, along with their associated values.
-    stored_nsvars = attr.ib(init=False, repr=False,
-                            default=attr.Factory(dict))
+    stored_nsvars = attr.ib(init=False, repr=False, default=attr.Factory(dict))
 
     #: |dict| container for storing the temporary variables discarded from
     #: the namespace after exiting the |with| block.
-    retained_tempvars = attr.ib(init=False, repr=False,
-                                default=attr.Factory(dict))
+    retained_tempvars = attr.ib(
+        init=False, repr=False, default=attr.Factory(dict)
+    )
 
     def __attrs_post_init__(self):
-        """Process arguments post-init in various ways."""
+        """Proofread identifier-matching arguments and copy for safety."""
+        from copy import copy
         import warnings
 
-        def copy_if_not_none(v):
-            """Return a copy of the input argument if it's not None."""
-            # This relies on `v` being a finite-size iterable if isn't None
-            return v if v is None else v[:]
-
-        # Trigger a warning if no patterns were passed
-        if all(map(lambda a: a is None or len(a) == 0,
-                   (self.names, self.starts, self.ends))):
-            warnings.warn("No masking patterns provided for TempVars",
-                          RuntimeWarning, stacklevel=2)
+        # Raise a warning if no patterns were passed
+        if all(
+            map(
+                lambda a: a is None or len(a) == 0,
+                (self.names, self.starts, self.ends),
+            )
+        ):
+            warnings.warn(
+                "No masking patterns provided for TempVars",
+                RuntimeWarning,
+                stacklevel=2,
+            )
 
         # Copy any arguments that aren't None
-        self.names = copy_if_not_none(self.names)
-        self.starts = copy_if_not_none(self.starts)
-        self.ends = copy_if_not_none(self.ends)
+        self.names = copy(self.names)
+        self.starts = copy(self.starts)
+        self.ends = copy(self.ends)
 
     def _pop_to(self, dest_dict, patterns, test_fxn):
         """Pop matching namespace members to a storage dict.
@@ -176,12 +198,9 @@ class TempVars(object):
         as the second argument.
 
         """
-        for _ in list(self._ns.keys()):
-            # Pop the variable over to the destination dictionary if
-            # any ``map`` result is truthy.
-            if any(map(lambda p, k=_, t=test_fxn: t(k, p),
-                       patterns)):
-                dest_dict.update({_: self._ns.pop(_)})
+        for key in list(self._ns.keys()):
+            if any(map(lambda p, k=key, t=test_fxn: t(k, p), patterns)):
+                dest_dict.update({key: self._ns.pop(key)})
 
     def __enter__(self):
         """Context manager entry function.
@@ -191,19 +210,14 @@ class TempVars(object):
         them in `self.stored_nsvars` for later reference.
 
         """
-        # Pop variables if they match exactly anything in `names`
-        if self.names is not None:
-            self._pop_to(self.stored_nsvars, self.names, str.__eq__)
+        patterns = (self.names, self.starts, self.ends)
+        funcs = (str.__eq__, str.startswith, str.endswith)
 
-        # Pop variables if they match any starts-with pattern
-        if self.starts is not None:
-            self._pop_to(self.stored_nsvars, self.starts, str.startswith)
+        for p, f in zip(patterns, funcs):
+            if p is not None:
+                self._pop_to(self.stored_nsvars, p, f)
 
-        # Pop variables if they match any ends-with pattern
-        if self.ends is not None:
-            self._pop_to(self.stored_nsvars, self.ends, str.endswith)
-
-        # Return instance so that users can inspect it if desired
+        # Return instance so that users can inspect/modify it if desired
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -217,20 +231,13 @@ class TempVars(object):
         context must handle all errors.
 
         """
-        # Pop variables if they match exactly anything in `names`
-        if self.names is not None:
-            self._pop_to(self.retained_tempvars, self.names, str.__eq__)
+        patterns = (self.names, self.starts, self.ends)
+        funcs = (str.__eq__, str.startswith, str.endswith)
 
-        # Pop variables if they match any starts-with pattern
-        if self.starts is not None:
-            self._pop_to(self.retained_tempvars, self.starts, str.startswith)
+        for p, f in zip(patterns, funcs):
+            if p is not None:
+                self._pop_to(self.retained_tempvars, p, f)
 
-        # Pop variables if they match any ends-with pattern
-        if self.ends is not None:
-            self._pop_to(self.retained_tempvars, self.ends, str.endswith)
-
-        # If restore is set, then repopulate the namespace with
-        # the pre-existing values.  Otherwise, do nothing.
         if self.restore:
             self._ns.update(self.stored_nsvars)
 
@@ -238,5 +245,5 @@ class TempVars(object):
         return False
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
     print("Module not executable.")

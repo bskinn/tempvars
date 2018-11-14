@@ -1,7 +1,10 @@
 attrs>=17
-codecov
+black
 coverage
 flake8
 flake8-docstrings
+restview
 sphinx
 sphinx-rtd-theme
+tox
+twine

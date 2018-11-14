@@ -1,0 +1,4 @@
+#! /bin/bash
+
+black setup.py tests.py tempvars tempvars/test -l 79
+

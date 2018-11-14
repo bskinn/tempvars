@@ -1,17 +1,27 @@
-# ------------------------------------------------------------------------------
-# Name:        tests
-# Purpose:     Master script for tempvars testing suite
-#
-# Author:      Brian Skinn
-#                bskinn@alum.mit.edu
-#
-# Created:     11 Sep 2017
-# Copyright:   (c) Brian Skinn 2017
-# License:     The MIT License; see "LICENSE.txt" for full license terms.
-#
-#           http://www.github.com/bskinn/tempvars
-#
-# ------------------------------------------------------------------------------
+r"""*Test runner module for* ``tempvars``.
+
+Context manager for handling temporary variables in
+Jupyter Notebook, IPython, etc.
+
+**Author**
+    Brian Skinn (bskinn@alum.mit.edu)
+
+**File Created**
+    11 Sep 2017
+
+**Copyright**
+    \(c) Brian Skinn 2017-2018
+
+**Source Repository**
+    http://www.github.com/bskinn/tempvars
+
+**Documentation**
+    http://tempvars.readthedocs.io
+
+**License**
+    The MIT License; see |license_txt|_ for full license terms
+
+"""
 
 
 class AP(object):
@@ -20,9 +30,10 @@ class AP(object):
     Also includes PFX, a helper string for substitution/formatting.
 
     """
-    ALL = 'all'
-    GOOD = 'good'
-    FAIL = 'fail'
+
+    ALL = "all"
+    GOOD = "good"
+    FAIL = "fail"
 
     PFX = "--{0}"
 
@@ -34,19 +45,27 @@ def get_parser():
     prs = argparse.ArgumentParser(description="Run tests for tempvars")
 
     # Verbosity argument
-    prs.add_argument('-v', action='store_true',
-                     help="Show verbose output")
+    prs.add_argument("-v", action="store_true", help="Show verbose output")
 
     # Groups without subgroups
-    prs.add_argument(AP.PFX.format(AP.ALL), '-a',
-                     action='store_true',
-                     help="Run all tests (overrides any other selections)")
-    prs.add_argument(AP.PFX.format(AP.GOOD), '-g',
-                     action='store_true',
-                     help="Run all expect-good tests")
-    prs.add_argument(AP.PFX.format(AP.FAIL), '-f',
-                     action='store_true',
-                     help="Run all expect-fail tests")
+    prs.add_argument(
+        AP.PFX.format(AP.ALL),
+        "-a",
+        action="store_true",
+        help="Run all tests (overrides any other selections)",
+    )
+    prs.add_argument(
+        AP.PFX.format(AP.GOOD),
+        "-g",
+        action="store_true",
+        help="Run all expect-good tests",
+    )
+    prs.add_argument(
+        AP.PFX.format(AP.FAIL),
+        "-f",
+        action="store_true",
+        help="Run all expect-fail tests",
+    )
 
     # Return the parser
     return prs
@@ -80,21 +99,21 @@ def main():
 
     # Commandline tests per-group
     # Expect-good tests
-    addsuiteif(tempvars.test.tempvars_base.suite_expect_good(),
-               [AP.ALL, AP.GOOD])
+    addsuiteif(
+        tempvars.test.tempvars_base.suite_expect_good(), [AP.ALL, AP.GOOD]
+    )
     # Expect-fail tests
-    addsuiteif(tempvars.test.tempvars_base.suite_expect_fail(),
-               [AP.ALL, AP.FAIL])
+    addsuiteif(
+        tempvars.test.tempvars_base.suite_expect_fail(), [AP.ALL, AP.FAIL]
+    )
 
     # Create the test runner and execute
-    ttr = ut.TextTestRunner(buffer=True,
-                            verbosity=(2 if params['v'] else 1))
+    ttr = ut.TextTestRunner(buffer=True, verbosity=(2 if params["v"] else 1))
     success = ttr.run(ts).wasSuccessful()
 
     # Return based on success result (enables tox)
     sys.exit(0 if success else 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-

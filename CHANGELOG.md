@@ -14,6 +14,36 @@ with TempVars(...) as tv:
 
 ### [Unreleased]
 
+...
+
+
+### [1.0.1] - 2018-11-14
+
+This release ***should not*** affect the behavior of the
+package in any way.
+
+#### Refactored
+
+ * Remove duplicative call to `inspect.currentframe()` in
+   `TempVars._ns_default`
+ * Replace custom `copy_if_not_none()` inner function with
+   built-in `copy.copy()`, in `__attrs_post_init__()`
+ * Refactor the temporary variable popping operations to
+   a more concise form in both `__enter__()`
+   and `__exit__()`
+
+#### Administrative
+
+ * Switched to [`black`](https://github.com/ambv/black)-style
+   code formatting
+ * Switched source file headers from comment blocks to
+   module docstrings
+ * Relocated some commentary from code comments to method
+   docstrings
+
+
+### [1.0.0] - 2017-10-19
+
 #### Added
 
 * `TempVars` now emits a warning if it is instantiated without
