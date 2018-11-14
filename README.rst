@@ -119,10 +119,10 @@ that may have been created earlier in a notebook:
 
 .. code:: python
 
-    >>> for k in {'foo': 'bar', 'baz': 'quux'}:
-    ...     print(k)
-    foo
-    baz
+    >>> for k in ['foo', 'bar']:
+    ...     pass
+    >>> print(k)
+    bar
     >>> with TempVars(names=['k'], restore=False):
     ...     print('k' in dir())
     False
