@@ -29,4 +29,4 @@ __all__ = ["TempVars"]
 
 from .tempvars import TempVars
 
-__version__ = "1.0.1.dev1"
+__version__ = "1.0.1"
