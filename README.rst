@@ -36,7 +36,7 @@ in the namespace?**
 
 ``tempvars`` *can help.*
 
-Jupyter notebooks can be frustrating.
+Developing in Jupyter notebooks can sometimes be frustrating.
 For example, it's aggravating to debug a worksheet for half an hour,
 only to discover that a carried-over variable name was hanging around
 in the notebook namespace and causing problems.
