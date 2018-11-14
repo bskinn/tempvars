@@ -103,13 +103,16 @@ class TempVars(object):
         for s in val:
             if type(s) != str:
                 raise te
+
             if at.name != "names" and (s == "_" or s == "__"):
                 raise ValueError(
                     "'_' and '__' are not permitted "
                     "for '{0}'".format(at.name)
                 )
+
             if at.name == "starts" and s.startswith("__"):
                 raise ValueError("'starts' may not start with '__'")
+
             if at.name == "ends" and s.endswith("__"):
                 raise ValueError("'ends' may not end with '__'")
 
@@ -127,6 +130,18 @@ class TempVars(object):
 
     @_ns.default
     def _ns_default(self):
+        """Assign the globals() namespace of the instantiating scope.
+
+        This "default value" needs to be crafted this way
+        because this way it's evaluated at run time, during instantiation.
+        Putting the globals() retrieval attempt directly in the attr.ib()
+        signature above would instead make the evaluation occur at
+        import/definition, which changes the relevant scope in a
+        significant way: it makes **this module** the scope of
+        the invocation of globals(), rather than the scope of
+        the instantiation call.
+
+        """
         import inspect
 
         # Need two f_back's since this call is inside a method that's
@@ -138,15 +153,7 @@ class TempVars(object):
         if fm.f_locals is not fm.f_globals:
             raise RuntimeError("TempVars can only be used in the global scope")
 
-        # This default needs to be crafted this way
-        # because it's evaluated at run time, during instantiation.
-        # Putting the globals() retrieval attempt directly in the attr.ib()
-        # signature above would make the evaluation occur at
-        # definition time(? at import?), which apparently changes
-        # the relevant scope in a significant way (likely it makes
-        # this module the accessed scope, rather than the scope of
-        # the instantiation call).
-        return inspect.currentframe().f_back.f_back.f_globals
+        return fm.f_globals
 
     # ## Internal vars, not set via the attrs __init__
     #: |dict| container for preserving variables masked from
@@ -160,11 +167,11 @@ class TempVars(object):
     )
 
     def __attrs_post_init__(self):
-        """Process arguments post-init in various ways."""
+        """Proofread identifier-matching arguments and copy for safety."""
         from copy import copy
         import warnings
 
-        # Trigger a warning if no patterns were passed
+        # Raise a warning if no patterns were passed
         if all(
             map(
                 lambda a: a is None or len(a) == 0,
@@ -191,11 +198,9 @@ class TempVars(object):
         as the second argument.
 
         """
-        for _ in list(self._ns.keys()):
-            # Pop the variable over to the destination dictionary if
-            # any ``map`` result is truthy.
-            if any(map(lambda p, k=_, t=test_fxn: t(k, p), patterns)):
-                dest_dict.update({_: self._ns.pop(_)})
+        for key in list(self._ns.keys()):
+            if any(map(lambda p, k=key, t=test_fxn: t(k, p), patterns)):
+                dest_dict.update({key: self._ns.pop(key)})
 
     def __enter__(self):
         """Context manager entry function.
@@ -205,19 +210,14 @@ class TempVars(object):
         them in `self.stored_nsvars` for later reference.
 
         """
-        # Pop variables if they match exactly anything in `names`
-        if self.names is not None:
-            self._pop_to(self.stored_nsvars, self.names, str.__eq__)
+        patterns = (self.names, self.starts, self.ends)
+        funcs = (str.__eq__, str.startswith, str.endswith)
 
-        # Pop variables if they match any starts-with pattern
-        if self.starts is not None:
-            self._pop_to(self.stored_nsvars, self.starts, str.startswith)
+        for p, f in zip(patterns, funcs):
+            if p is not None:
+                self._pop_to(self.stored_nsvars, p, f)
 
-        # Pop variables if they match any ends-with pattern
-        if self.ends is not None:
-            self._pop_to(self.stored_nsvars, self.ends, str.endswith)
-
-        # Return instance so that users can inspect it if desired
+        # Return instance so that users can inspect/modify it if desired
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -231,20 +231,13 @@ class TempVars(object):
         context must handle all errors.
 
         """
-        # Pop variables if they match exactly anything in `names`
-        if self.names is not None:
-            self._pop_to(self.retained_tempvars, self.names, str.__eq__)
+        patterns = (self.names, self.starts, self.ends)
+        funcs = (str.__eq__, str.startswith, str.endswith)
 
-        # Pop variables if they match any starts-with pattern
-        if self.starts is not None:
-            self._pop_to(self.retained_tempvars, self.starts, str.startswith)
+        for p, f in zip(patterns, funcs):
+            if p is not None:
+                self._pop_to(self.retained_tempvars, p, f)
 
-        # Pop variables if they match any ends-with pattern
-        if self.ends is not None:
-            self._pop_to(self.retained_tempvars, self.ends, str.endswith)
-
-        # If restore is set, then repopulate the namespace with
-        # the pre-existing values.  Otherwise, do nothing.
         if self.restore:
             self._ns.update(self.stored_nsvars)
 

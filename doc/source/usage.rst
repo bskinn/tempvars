@@ -31,12 +31,36 @@ one or more of |arg_names|_, |arg_starts|_, and/or |arg_ends|_ are
 
 .. _usage_toc:
 
-Table of Contents
-~~~~~~~~~~~~~~~~~
+**Contents**
 
 .. contents::
     :local:
     :backlinks: top
+
+
+.. _recommended_standard_usage:
+
+Recommended Standard Usage
+--------------------------
+
+This author's standard approach for using :class:`~tempvars.TempVars`
+is via the `starts` argument as follows:
+
+.. doctest:: recommended
+
+    >>> with TempVars(starts=['t_']):
+    ...     t_foo = foo
+    ...     t_baz = foo + bar
+    ...     print(t_foo + t_baz)
+    4
+    >>> print('t_foo' in dir())
+    False
+    >>> print('t_baz' in dir())
+    False
+
+As shown, any variable desired to be temporary can just be prefixed with
+`t_`, and it will not survive beyond the scope of the relevant
+:class:`~tempvars.TempVars` suite.
 
 
 Masking Specific Variables
@@ -90,7 +114,8 @@ the |with| block:
 Masking Variables by Pattern
 ----------------------------
 
-Variables can also be masked by pattern matching. Currently,
+As :ref:`noted above <recommended_standard_usage>`,
+variables can also be masked by pattern matching. Currently,
 only 'starts with' and 'ends with' matching styles are supported:
 
 .. doctest:: starts_ends_basic
@@ -214,8 +239,7 @@ mutable arguments:
 .. doctest:: basic_binding_demo
 
     >>> names_in = ['foo']
-    >>> with TempVars(names=names_in, starts=['baz', 'quux'],
-    ...               ends=['ar']) as tv:
+    >>> with TempVars(names=names_in, starts=['baz', 'quux'], ends=['ar']) as tv:
     ...     print(tv.starts)
     ...     print(tv.ends)
     ...     print(tv.names)

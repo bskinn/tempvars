@@ -7,3 +7,4 @@ restview
 sphinx
 sphinx-rtd-theme
 tox
+twine
