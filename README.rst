@@ -3,10 +3,10 @@ tempvars: A context manager for handling temporary variables
 
 **Current Development Version:**
 
-.. image:: https://travis-ci.org/bskinn/tempvars.svg?branch=dev
+.. image:: https://travis-ci.org/bskinn/tempvars.svg?branch=master
     :target: https://travis-ci.org/bskinn/tempvars
 
-.. image:: https://codecov.io/gh/bskinn/tempvars/branch/dev/graph/badge.svg
+.. image:: https://codecov.io/gh/bskinn/tempvars/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/bskinn/tempvars
 
 **Most Recent Stable Release:**
@@ -22,7 +22,7 @@ tempvars: A context manager for handling temporary variables
     :target: http://tempvars.readthedocs.io/en/latest/
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
-    :target: https://github.com/bskinn/tempvars/blob/master/LICENSE.txt
+    :target: https://github.com/bskinn/tempvars/blob/stable/LICENSE.txt
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/ambv/black
