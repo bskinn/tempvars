@@ -25,7 +25,7 @@ tempvars: A context manager for handling temporary variables
     :target: https://github.com/bskinn/tempvars/blob/stable/LICENSE.txt
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/ambv/black
+    :target: https://github.com/python/black
 
 ----
 
