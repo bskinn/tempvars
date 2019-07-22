@@ -90,7 +90,7 @@ of the `starts` argument:
     ...     print(foo + t_bar)
     5
     13
-    >>> print('t_bar' in dir())
+    >>> 't_bar' in dir()
     False
 
 A similar effect can be achieved with a suffix such as `_t` and
@@ -108,7 +108,7 @@ code in a more selective fashion via the `names` argument:
     ...     print('bar' in dir())
     5
     False
-    >>> print(foo * bar)
+    >>> foo * bar
     35
 
 Setting the `restore` argument to ``False`` instructs ``TempVars``
@@ -121,12 +121,12 @@ that may have been created earlier in a notebook:
 
     >>> for k in ['foo', 'bar']:
     ...     pass
-    >>> print(k)
+    >>> k
     bar
     >>> with TempVars(names=['k'], restore=False):
     ...     print('k' in dir())
     False
-    >>> print('k' in dir())
+    >>> 'k' in dir()
     False
 
 ``TempVars`` stores the values of variables it removes from the namespace,
@@ -144,9 +144,9 @@ used in order to enable this:
     False
     5
     8
-    >>> print(foo)
+    >>> foo
     5
-    >>> print(tv.retained_tempvars['foo'])
+    >>> tv.retained_tempvars['foo']
     8
 
 ----
