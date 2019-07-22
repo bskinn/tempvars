@@ -3,6 +3,7 @@ black
 coverage
 flake8
 flake8-docstrings
+pydocstyle<4
 restview
 sphinx
 sphinx-rtd-theme

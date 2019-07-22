@@ -3,5 +3,6 @@ codecov
 coverage
 flake8
 flake8-docstrings
+pydocstyle<4
 sphinx
 sphinx-rtd-theme
