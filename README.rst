@@ -122,7 +122,7 @@ that may have been created earlier in a notebook:
     >>> for k in ['foo', 'bar']:
     ...     pass
     >>> k
-    bar
+    'bar'
     >>> with TempVars(names=['k'], restore=False):
     ...     print('k' in dir())
     False
